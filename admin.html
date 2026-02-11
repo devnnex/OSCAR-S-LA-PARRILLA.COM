@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel Admin | 🔥 OSCAR'S PARRILLA |</title>
+
+  <!-- FONTAWESOME CDN -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+   <!-- 🧩 Favicon clásico -->
+  <link rel="icon" type="image/png" href="./images/favicon.png">
+
+  <!-- 📱 Ícono de app (iOS / Android) -->
+  <link rel="apple-touch-icon" href="./images/favicon.png">
+
+  <!-- 🧭 Configuración PWA -->
+  <meta name="theme-color" content="#ff6600">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OSCAR'S PARRILLA APP">
+
+  <!-- 📜 Manifest -->
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="admin.css">
+
+  <!-- Libraries (Chart, jsPDF, XLSX) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="app-root">
+    <!-- SIDEBAR (always visible on desktop, slide-in on mobile) -->
+    <aside id="sidebar" class="sidebar" aria-hidden="true">
+      <div class="sidebar-inner">
+        <div class="brand">
+          
+          <div class="brand-name"><img src="images/logo.png" alt="Juanelos" class="brand-logo"></div>
+        </div>
+
+        <nav class="nav" role="navigation" aria-label="Navegación principal">
+          <button class="nav-btn active" data-section="ventas" title="Ventas">
+            <i class="fa-solid fa-cash-register"></i>
+            <span class="label">Ventas</span>
+          </button>
+
+          <button class="nav-btn" data-section="pedidos" title="Pedidos">
+            <i class="fa-solid fa-truck-fast"></i>
+            <span class="label">Pedidos</span>
+          </button>
+
+          <button class="nav-btn" data-section="analisis" title="Análisis">
+            <i class="fa-solid fa-chart-line"></i>
+            <span class="label">Análisis</span>
+          </button>
+
+          <button class="nav-btn" data-section="productos" title="Productos">
+            <i class="fa-solid fa-ice-cream"></i>
+            <span class="label">Productos</span>
+          </button>
+
+          <button class="nav-btn" data-section="extras" title="Extras">
+            <i class="fa-solid fa-cookie-bite"></i>
+            <span class="label">Extras</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button id="settings-btn" class="ghost">Ajustes</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- OVERLAY when sidebar open on mobile -->
+    <div id="overlay" class="overlay" hidden></div>
+
+    <!-- MAIN AREA -->
+    <div class="main">
+      <header class="topbar">
+        <div class="left">
+          <button id="hamburger" class="hamburger" aria-label="Abrir menú">☰</button>
+          <div class="title">Panel de administración</div>
+        </div>
+        <div class="right">
+          <input id="global-search" class="search" placeholder="Buscar ventas, pedidos, clientes...">
+          <button id="logout" class="btn">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <!-- VENTAS -->
+        <section id="ventas" class="section active" aria-labelledby="ventas-title">
+          <div class="section-header">
+            <h2 id="ventas-title">Ventas</h2>
+            <div class="controls">
+              <select id="ventas-filter" class="select">
+                <option value="all">Todos</option>
+                <option value="venta">Venta</option>
+                <option value="pedido">Pedido</option>
+              </select>
+              <input id="ventas-search" class="input" placeholder="Buscar por ID, cliente, producto...">
+              <button id="export-xlsx" class="btn">Exportar Excel</button>
+              <button id="export-pdf" class="btn">Exportar PDF</button>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="card kpis">
+              <div class="kpi">
+                <div class="kpi-label">Ingresos</div>
+                <div id="kpi-ingresos" class="kpi-value">$0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Ventas</div>
+                <div id="kpi-ventas" class="kpi-value">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-label">Pedidos</div>
+                <div id="kpi-pedidos" class="kpi-value">0</div>
+              </div>
+            </div>
+
+            <div class="card chart-card">
+              <h3>Ganancias mensuales</h3>
+              <canvas id="chart-month" height="120"></canvas>
+            </div>
+          </div>
+
+          <div class="card table-card">
+            <table id="sales-table" class="table" role="table">
+              <thead>
+                <tr><th>ID</th><th>Fecha</th><th>Cliente</th><th>Tipo</th><th>Total</th><th>Acciones</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- PEDIDOS -->
+        <section id="pedidos" class="section" aria-labelledby="pedidos-title">
+          <div class="section-header"><h2 id="pedidos-title">Pedidos</h2></div>
+          <div class="card" id="orders-card">Listado de pedidos</div>
+        </section>
+
+        <!-- ANALISIS -->
+        <section id="analisis" class="section" aria-labelledby="analisis-title">
+          <div class="section-header"><h2 id="analisis-title">Análisis</h2></div>
+          <div class="card">
+            <h3>Ingresos acumulados</h3>
+            <canvas id="chart-analisis" height="160"></canvas>
+          </div>
+        </section>
+
+        <!-- PRODUCTOS -->
+        <section id="productos" class="section" aria-labelledby="productos-title">
+          <div class="section-header"><h2 id="productos-title">Productos</h2></div>
+          <div id="productos-container" class="catalog"></div>
+        </section>
+
+        <!-- EXTRAS -->
+        <section id="extras" class="section" aria-labelledby="extras-title">
+          <div class="section-header"><h2 id="extras-title">Extras</h2></div>
+          <div id="extras-container" class="catalog"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+  
+  <!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script src="admin.js"></script>
+</body>
+</html>
