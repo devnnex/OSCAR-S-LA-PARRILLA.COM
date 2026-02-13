@@ -67,7 +67,7 @@ input::placeholder {
 
 
 h3 {
-  color: #ffffff;
+  color: #000000;
   font-size: 15px;
   padding-bottom: 5px;
 }
@@ -1179,6 +1179,7 @@ body {
 
 .modal-body {
   padding: 0 24px 24px;
+  color: black;
 }
 
 .image-wrap {
