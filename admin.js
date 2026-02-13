@@ -8,6 +8,21 @@
 const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbwm_1k9_4u68gAgUuSbvOXA5jfq1aIMJIaaFNDiB9PKa0yFBrZhhhMVQQQ-Qc22jeEb/exec";
 
 
+function normalizePedido(p) {
+  return {
+    id: p.id || p.ID || '',
+    fecha: p.fecha || p.Fecha || p.date || '',
+    nombre: p.nombre || p.Nombre || 'Cliente',
+    telefono: p.telefono || p.Teléfono || '',
+    metodo: p.metodo || p.Método || '',
+    direccion: p.direccion || p.Dirección || '',
+    pago: p.pago || p.Pago || '',
+    total: Number(p.total || p.Total || 0),
+    productos: p.productos || p.Productos || '',
+    notas: p.notas || p.Notas || ''
+  };
+}
+
 
 
   // ---------- UI elementos ----------
@@ -466,24 +481,139 @@ async function loadVentas() {
   ventasFilter?.addEventListener('change', refreshSales);
 
   // export xlsx (using XLSX utils)
-  exportXlsxBtn?.addEventListener('click', () => {
-    const rows = getFilteredSales().map(r => [r.id, new Date(r.date).toLocaleString(), r.customer, r.type, r.total]);
-    const header = ['ID', 'Fecha', 'Cliente', 'Tipo', 'Total'];
-    const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
-    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Ventas');
-    XLSX.writeFile(wb, 'ventas.xlsx');
-  });
+  exportXlsxBtn?.addEventListener("click", exportSalesTableExcel);
+
+function exportSalesTableExcel() {
+
+  const table = document.getElementById("sales-table");
+
+  if (!table) {
+    alert("No se encontró la tabla de ventas");
+    return;
+  }
+
+  const tableClone = table.cloneNode(true);
+  stripSalesExcelColumns(tableClone);
+
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.table_to_sheet(tableClone, { raw: true });
+
+  const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+  worksheet["!cols"] = rows[0].map((_, i) => ({ wch: 18 }));
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Ventas");
+
+  XLSX.writeFile(
+    workbook,
+    `Ventas_${new Date().toISOString().slice(0,10)}.xlsx`
+  );
+}
+
 
   // export pdf (simple)
-  exportPdfBtn?.addEventListener('click', () => {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'pt', 'a4');
-    const rows = getFilteredSales().map(r => [r.id, new Date(r.date).toLocaleString(), r.customer, r.type, formatCurrency(r.total)]);
-    doc.setFontSize(12); doc.text('Listado de ventas', 40, 40);
-    let y = 70; doc.setFontSize(10); doc.text(['ID','Fecha','Cliente','Tipo','Total'].join(' | '), 40, y); y += 18;
-    rows.forEach(r => { doc.text(r.join(' | '), 40, y); y += 14; if (y > 750) { doc.addPage(); y = 40; } });
-    doc.save('ventas.pdf');
+ exportPdfBtn?.addEventListener("click", exportSalesTablePDF);
+
+function exportSalesTablePDF() {
+
+  const table = document.getElementById("sales-table");
+
+  if (!table) {
+    alert("No se encontró la tabla de ventas");
+    return;
+  }
+
+  const tableClone = table.cloneNode(true);
+  stripSalesPdfColumns(tableClone);
+
+  tableClone.style.width = "100%";
+  tableClone.style.borderCollapse = "collapse";
+  tableClone.style.background = "#ffffff";
+  tableClone.style.color = "#000";
+  tableClone.style.tableLayout = "fixed";
+
+  tableClone.querySelectorAll("th, td").forEach(cell => {
+    cell.style.border = "1px solid #ccc";
+    cell.style.fontSize = "11px";
+    cell.style.padding = "6px";
+    cell.style.color = "#000";
+    cell.style.background = "#fff";
+    cell.style.overflowWrap = "break-word";
   });
+
+  tableClone.querySelectorAll("th").forEach(th => {
+    th.style.background = "#f2f2f2";
+    th.style.fontWeight = "600";
+  });
+
+  const pdfContainer = document.createElement("div");
+  pdfContainer.style.padding = "20px";
+  pdfContainer.style.fontFamily = "Arial";
+  pdfContainer.style.background = "#ffffff";
+
+  pdfContainer.innerHTML = `
+    <h2>Ventas</h2>
+    <div style="font-size:11px;margin-bottom:12px;">
+      Generado el ${new Date().toLocaleString("es-CO")}
+    </div>
+  `;
+
+  pdfContainer.appendChild(tableClone);
+
+  html2pdf().set({
+    margin: [0.6, 0.4, 0.6, 0.4],
+    filename: `Ventas_${new Date().toISOString().slice(0,10)}.pdf`,
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: {
+      scale: 2,
+      backgroundColor: "#ffffff",
+      useCORS: true
+    },
+    jsPDF: {
+      unit: "in",
+      format: "letter",
+      orientation: "landscape"
+    }
+  }).from(pdfContainer).save();
+}
+
+
+function stripSalesPdfColumns(table) {
+
+  const headers = table.querySelectorAll("thead th");
+  const removeIndexes = [];
+
+  headers.forEach((th, index) => {
+    if (th.textContent.toLowerCase().includes("acciones")) {
+      removeIndexes.push(index);
+    }
+  });
+
+  table.querySelectorAll("tr").forEach(row => {
+    [...removeIndexes].reverse().forEach(i => {
+      if (row.children[i]) row.children[i].remove();
+    });
+  });
+}
+
+function stripSalesExcelColumns(table) {
+
+  const headers = table.querySelectorAll("thead th");
+  const removeIndexes = [];
+
+  headers.forEach((th, index) => {
+    if (th.textContent.toLowerCase().includes("acciones")) {
+      removeIndexes.push(index);
+    }
+  });
+
+  table.querySelectorAll("tr").forEach(row => {
+    [...removeIndexes].reverse().forEach(i => {
+      if (row.children[i]) row.children[i].remove();
+    });
+  });
+}
+
 
   // view detail action
   document.addEventListener('click', (e) => {
@@ -605,6 +735,42 @@ function formatFechaPedido(f) {
 
 
 
+function updatePedidoBadges() {
+
+  const ahora = Date.now();
+
+  document.querySelectorAll(".pedido-card").forEach(card => {
+
+    const fecha = card.dataset.fecha;
+    if (!fecha) return;
+
+    const fechaPedido = tryParseDate(fecha)?.getTime() || 0;
+    const minutos = (ahora - fechaPedido) / 60000;
+
+    const badge = card.querySelector(".pedido-badge");
+    if (!badge) return;
+
+    badge.className = "pedido-badge";
+
+    if (minutos < 3) {
+      badge.textContent = "NEW";
+      badge.classList.add("badge-new");
+    }
+    else if (minutos < 6) {
+      badge.textContent = "DELAY";
+      badge.classList.add("badge-delay");
+    }
+    else {
+      badge.textContent = "LATE";
+      badge.classList.add("badge-late");
+    }
+
+  });
+
+}
+
+
+
 
 // Renderizar pedidos en tabla
 function renderPedidos(pedidos) {
@@ -615,9 +781,10 @@ function renderPedidos(pedidos) {
   }
 
    // 🔥 ORDENAR: el más reciente siempre primero
-  pedidos = [...pedidos].sort((a, b) => {
-    return new Date(b.fecha) - new Date(a.fecha);
-  });
+ pedidos = [...pedidos].sort((a, b) => {
+  return tryParseDate(b.fecha) - tryParseDate(a.fecha);
+});
+
 
   function getEstadoBadge(p) {
     const ahora = Date.now();
@@ -720,9 +887,9 @@ function renderPedidos(pedidos) {
   });
 
   // === REFRESH AUTOMÁTICO CADA MINUTO ===
-  setTimeout(() => {
-    renderPedidos(pedidos);
-  }, 60000);
+  // setTimeout(() => {
+  //   renderPedidos(pedidos);
+  // }, 60000);
 
   // === Eventos existentes (NO se tocan) ===
   document.querySelectorAll(".btn-editar").forEach(btn => {
@@ -852,13 +1019,15 @@ newOrderSound.loop = true;
 
 // === FUNCIÓN HASH SEGURA ===
 function hashData(arr) {
-  return btoa(JSON.stringify(arr.map(p => ({
-    id: p.id || p.ID,
-    estado: p.estado || p.Estado || '',
-    total: Number(p.total || p.Total || 0),
-    fecha: p.fecha || p.Fecha || ''
-  }))));
+  return btoa(JSON.stringify(
+    arr.map(p => ({
+      id: p.id,
+      fecha: p.fecha,
+      total: p.total
+    }))
+  ));
 }
+
 
 // === CARGAR IDs YA NOTIFICADOS ===
 function getPedidosNotificados() {
@@ -877,7 +1046,10 @@ async function checkPedidosUpdate() {
     const data = await res.json();
     if (!Array.isArray(data)) return;
 
-    const pedidosActuales = data.filter(p => p.id || p.ID);
+    const pedidosActuales = data
+    .filter(p => p.id || p.ID)
+    .map(normalizePedido);
+
     const currentHash = hashData(pedidosActuales);
 
     // 🧩 Detectar cambios totales (para refrescar tabla)
@@ -1002,10 +1174,19 @@ function detenerAlerta() {
 }
 
 // === VERIFICACIÓN AUTOMÁTICA ===
+// =========================
+// 🔄 DATA ENGINE (Sheets)
+// =========================
 setInterval(() => {
   checkPedidosUpdate();
   checkVentasUpdate();
 }, REFRESH_INTERVAL);
+
+// =========================
+// ⏱️ TIME ENGINE (Local)
+// =========================
+setInterval(updatePedidoBadges, 5000);
+
 
 
 /* === VENTAS EN TIEMPO REAL === */
