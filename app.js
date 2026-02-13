@@ -81,7 +81,7 @@ const products = [
 {
   id: 'pizz1',
   category: 'Pizzetas Artesanales',
-  title: 'Tesla',
+  title: 'Pizzeta Tesla',
   price: 25000,
   desc: 'Pizzeta artesanal con pollo, queso, maíz, cebolla y pimentón.',
   ingredients: ['Pollo', 'Queso', 'Maíz', 'Cebolla', 'Pimentón'],
@@ -95,7 +95,7 @@ const products = [
 {
   id: 'pizz2',
   category: 'Pizzetas Artesanales',
-  title: "Oscar's",
+  title: "Pizzeta Oscar's",
   price: 27000,
   desc: 'Pollo, cabano, queso, tomate y salsa pesto en masa artesanal.',
   ingredients: ['Pollo', 'Cabano', 'Queso', 'Tomate', 'Salsa pesto'],
@@ -109,7 +109,7 @@ const products = [
 {
   id: 'pizz3',
   category: 'Pizzetas Artesanales',
-  title: 'Genesis',
+  title: 'Pizzeta Genesis',
   price: 25000,
   desc: 'Queso, piña y jamón sobre base artesanal.',
   ingredients: ['Queso', 'Piña', 'Jamón'],
@@ -122,7 +122,7 @@ const products = [
 {
   id: 'pizz4',
   category: 'Pizzetas Artesanales',
-  title: 'Chery',
+  title: 'Pizzeta Chery',
   price: 25000,
   desc: 'Carne molida, maíz, pimentón, cebolla, jalapeño, tostacos y queso.',
   ingredients: ['Carne molida', 'Maíz', 'Pimentón', 'Cebolla', 'Jalapeño', 'Tostacos', 'Queso'],
@@ -136,7 +136,7 @@ const products = [
 {
   id: 'pizz5',
   category: 'Pizzetas Artesanales',
-  title: 'Lada',
+  title: 'Pizzeta Lada',
   price: 25000,
   desc: 'Queso y bocadillo sobre base artesanal.',
   ingredients: ['Queso', 'Bocadillo'],
@@ -149,7 +149,7 @@ const products = [
 {
   id: 'pizz6',
   category: 'Pizzetas Artesanales',
-  title: 'Jac',
+  title: 'Pizzeta Jac',
   price: 25000,
   desc: 'Pollo, champiñones y queso.',
   ingredients: ['Pollo', 'Champiñones', 'Queso'],
@@ -162,7 +162,7 @@ const products = [
 {
   id: 'pizz7',
   category: 'Pizzetas Artesanales',
-  title: 'Apollo',
+  title: 'Pizzeta Apollo',
   price: 25000,
   desc: 'Pollo, tocineta, queso y miel mostaza.',
   ingredients: ['Pollo', 'Tocineta', 'Queso', 'Miel mostaza'],
@@ -175,7 +175,7 @@ const products = [
 {
   id: 'pizz8',
   category: 'Pizzetas Artesanales',
-  title: 'Lancia',
+  title: 'Pizzeta Lancia',
   price: 27000,
   desc: 'Carne en cuadros, chorizo, queso, maíz, cebolla y pimentón.',
   ingredients: ['Carne en cuadros', 'Chorizo', 'Queso', 'Maíz', 'Cebolla', 'Pimentón'],
@@ -188,7 +188,7 @@ const products = [
 {
   id: 'pizz9',
   category: 'Pizzetas Artesanales',
-  title: 'Brabus',
+  title: 'Pizzeta Brabus',
   price: 25000,
   desc: 'Queso, tomate asado y salsa pesto.',
   ingredients: ['Queso', 'Tomate asado', 'Salsa pesto'],
@@ -201,7 +201,7 @@ const products = [
 {
   id: 'pizz10',
   category: 'Pizzetas Artesanales',
-  title: 'Rubicon',
+  title: 'Pizzeta Rubicon',
   price: 25000,
   desc: 'Queso, tocineta y maíz.',
   ingredients: ['Queso', 'Tocineta', 'Maíz'],
@@ -214,7 +214,7 @@ const products = [
 {
   id: 'pizz11',
   category: 'Pizzetas Artesanales',
-  title: 'Infiniti',
+  title: 'Pizzeta Infiniti',
   price: 27000,
   desc: 'Pepperoni y queso sobre masa artesanal.',
   ingredients: ['Pepperoni', 'Queso'],
@@ -227,7 +227,7 @@ const products = [
 {
   id: 'pizz12',
   category: 'Pizzetas Artesanales',
-  title: 'Abarth',
+  title: 'Pizzeta Abarth',
   price: 30000,
   desc: 'Camarones al ajillo, queso, cebolla y pimentón.',
   ingredients: ['Camarones al ajillo', 'Queso', 'Cebolla', 'Pimentón'],
@@ -240,7 +240,7 @@ const products = [
 {
   id: 'pizz13',
   category: 'Pizzetas Artesanales',
-  title: 'Vegetariana',
+  title: 'Pizzeta Vegetariana',
   price: 27000,
   desc: 'Champiñones, pimentón, cebolla, maíz y queso.',
   ingredients: ['Champiñones', 'Pimentón', 'Cebolla', 'Maíz', 'Queso'],
@@ -451,34 +451,78 @@ const products = [
     desc: 'Agua mineral con gas.',
     image: 'images/agua-gas.png'
   },
-
+//JUGOS NATURALES 
   {
-    id: 'jugo1',
-    category: 'Jugos Naturales',
-    title: 'Mora',
-    price: 7000, // Precio con leche
-    priceAlt: 6000, // Precio con agua
-    desc: 'Jugo natural de mora. Puedes elegir entre agua o leche.',
-    image: 'images/jugo-mora.png'
-  },
-  {
-    id: 'jugo2',
-    category: 'Jugos Naturales',
-    title: 'Fresa',
-    price: 7000, // Precio con leche
-    priceAlt: 6000, // Precio con agua
-    desc: 'Jugo natural de fresa. Puedes elegir entre agua o leche.',
-    image: 'images/jugo-fresa.png'
-  },
-  {
-    id: 'jugo3',
-    category: 'Jugos Naturales',
-    title: 'Maracuyá',
-    price: 7000, // Precio con leche
-    priceAlt: 6000, // Precio con agua
-    desc: 'Jugo natural de maracuyá. Puedes elegir entre agua o leche.',
-    image: 'images/jugo-maracuya.png'
-  },
+  id: 'j1',
+  category: 'Jugos',
+  title: 'Jugo de Mora',
+  price: 6000,
+  desc: 'Jugo natural de mora. Puedes elegir entre agua o leche.',
+  ingredients: ['Mora', 'Azúcar', 'Hielo'],
+  image: 'images/jugo-mora.png',
+  sizes: [
+    {
+      id: 'j1-agua',
+      label: 'En agua',
+      price: 6000,
+      image: 'images/jugo-mora.png'
+    },
+    {
+      id: 'j1-leche',
+      label: 'En leche',
+      price: 7000,
+      image: 'images/jugo-mora.png'
+    }
+  ]
+},
+{
+  id: 'j2',
+  category: 'Jugos',
+  title: 'Jugo de Fresa',
+  price: 6000,
+  desc: 'Jugo natural de fresa. Puedes elegir entre agua o leche.',
+  ingredients: ['Fresa', 'Azúcar', 'Hielo'],
+  image: 'images/jugo-fresa.png',
+  sizes: [
+    {
+      id: 'j2-agua',
+      label: 'En agua',
+      price: 6000,
+      image: 'images/jugo-fresa.png'
+    },
+    {
+      id: 'j2-leche',
+      label: 'En leche',
+      price: 7000,
+      image: 'images/jugo-fresa.png'
+    }
+  ]
+},
+{
+  id: 'j3',
+  category: 'Jugos',
+  title: 'Jugo de Maracuyá',
+  price: 6000,
+  desc: 'Jugo natural de maracuyá. Puedes elegir entre agua o leche.',
+  ingredients: ['Maracuyá', 'Azúcar', 'Hielo'],
+  image: 'images/jugo-maracuya.png',
+  sizes: [
+    {
+      id: 'j3-agua',
+      label: 'En agua',
+      price: 6000,
+      image: 'images/jugo-maracuya.png'
+    },
+    {
+      id: 'j3-leche',
+      label: 'En leche',
+      price: 7000,
+      image: 'images/jugo-maracuya.png'
+    }
+  ]
+}
+,
+  //LIMONADAS REFRESCANTES
     {
     id: 'limonada1',
     category: 'Limonadas',
@@ -1462,6 +1506,7 @@ document.addEventListener("click", (e) => {
 
 
 // ============Fin de codigo de Descarga QR=================
+
 
 
 
