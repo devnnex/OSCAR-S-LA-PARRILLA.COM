@@ -1,8 +1,9 @@
+
 // app.js — lógica completa para The Boss (con imágenes locales)
 
 // ---------- Config ----------
 const BUSINESS_PHONE = '573123723999'; // <- reemplaza por el número real (sin '+')
-const DELIVERY_FEE = 5000; // tarifa por defecto de domicilio
+const DELIVERY_FEE = 0; // tarifa por defecto de domicilio
 
 // ---------- Datos de ejemplo ----------
 const products = [
@@ -509,6 +510,7 @@ const categories = [...new Set(products.map(p=>p.category))];
 // ---------- Estado ----------
 let cart = JSON.parse(localStorage.getItem('tb_cart') || '[]');
 let activeCategory = 'Menú Infantil';
+
 // ---------- DOM refs ----------
 const catalogEl = document.getElementById('catalog');
 const categoriesEl = document.querySelector('.categories');
@@ -539,28 +541,8 @@ function init(){
   setActiveCategory(activeCategory);
   bindEvents();
   refreshCartUI();
-  renderProducts(activeCategory);
-  applyAvailabilityToRendered(); // ✅ justo después del render
 }
-
 init();
-
-window.addEventListener('productAvailabilityChanged', e => {
-  const { id } = e.detail;
-  applyAvailabilityToRendered(id);
-});
-
-window.addEventListener('storage', (e) => {
-  if (e.key === 'productStatus' || e.key === 'productStatusUpdate') {
-    applyAvailabilityToRendered();
-    // si hay un modal abierto (product-overlay) actualiza sus extras
-    const modal = document.querySelector('.product-overlay');
-    if (modal) applyExtrasAvailability(modal);
-  }
-});
-
-
-
 
 // ---------- Render categorías ----------
 function renderCategories(){
@@ -612,7 +594,6 @@ function renderProducts(cat) {
   items.forEach(p => {
     const el = document.createElement('article');
     el.className = 'card';
-    el.dataset.id = p.id; // <-- asegúrate de esto
     el.innerHTML = `
       <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}">
       <div class="title">${escapeHtml(p.title)}</div>
@@ -622,187 +603,10 @@ function renderProducts(cat) {
         <button class="add" data-id="${p.id}">Agregar</button>
       </div>
     `;
-    // el evento solo se agrega si el producto está disponible (ver abajo)
+    el.querySelector('.add').addEventListener('click', () => openProductModal(p.id));
     catalogEl.appendChild(el);
   });
-
-  // después de crear las cards, aplicamos disponibilidad y bind de eventos
-  applyAvailabilityToRendered();
 }
-
-
-// ====== 🔄 SINCRONIZACIÓN DE DISPONIBILIDAD CON GOOGLE SHEETS ======
-
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoiB5wjuWak8Z0CeHenYc93M7UR7K43dPOCRGQ8RmrZjb8CAFywjqC0wGuOWBSI-GZhw/exec'; 
-// 👆 el mismo que usas en el admin
-
-async function fetchAvailability() {
-  try {
-    const res = await fetch(SCRIPT_URL + '?t=' + Date.now()); 
-    // 👆 se agrega un timestamp para evitar que el navegador cachee la respuesta
-
-    // Verificar que la respuesta sea correcta
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-
-    // Convertir la data del sheet en un objeto { id: boolean }
-    const status = {};
-    data.forEach(item => {
-      // Aseguramos compatibilidad: TRUE/FALSE, true/false, "TRUE"/"FALSE"
-      status[item.id] = item.disponible === true || item.disponible === 'TRUE';
-    });
-
-    // Leer el estado anterior del localStorage
-    const prevStatus = JSON.parse(localStorage.getItem('productStatus')) || {};
-
-    // Comparar para no refrescar la UI sin necesidad
-    if (JSON.stringify(prevStatus) !== JSON.stringify(status)) {
-      localStorage.setItem('productStatus', JSON.stringify(status));
-
-      // 🔥 Reaplica visualmente la disponibilidad actualizada
-      if (typeof applyAvailabilityToRendered === 'function') {
-        applyAvailabilityToRendered();
-      }
-
-      console.log('🔁 Estado actualizado desde Google Sheets');
-    }
-
-  } catch (err) {
-    console.error('❌ Error al obtener disponibilidad:', err);
-  }
-}
-
-// Ejecutar al cargar la página
-fetchAvailability();
-
-// Y volver a consultar cada 5 segundos
-setInterval(fetchAvailability, 500);
-
-
-
-
-// lee estados guardados y aplica cambios solo al botón del producto correspondiente
-async function applyAvailabilityToRendered(productId = null) {
-  // intentar leer desde Google Sheets primero
-  let status = {};
-  try {
-    const res = await fetch(SCRIPT_URL + '?t=' + Date.now());
-    const data = await res.json(); // array [{id, disponible}, ...] o similar
-    data.forEach(item => {
-      // robusto: acepta true/false o "TRUE"/"FALSE"
-      status[item.id] = String(item.disponible).toLowerCase() === 'true' || item.disponible === true;
-    });
-    // actualizar cache local para fallback
-    localStorage.setItem('productStatus', JSON.stringify(status));
-  } catch (err) {
-    // si falla la red, usar localStorage como fallback
-    status = JSON.parse(localStorage.getItem('productStatus')) || {};
-    console.warn('fetchAvailability fallback to localStorage', err);
-  }
-
-  // Si se pide solo un producto, actualiza solo ese
-  const cards = productId 
-    ? [document.querySelector(`.card[data-id="${productId}"]`)].filter(Boolean)
-    : document.querySelectorAll('.card');
-
-  cards.forEach(card => {
-    const id = card.dataset.id;
-    if (!id) return;
-
-    const addBtn = card.querySelector('.add');
-    if (!addBtn) return;
-
-    const disponible = status[id] === undefined ? true : Boolean(status[id]);
-
-    // Reset visual
-    addBtn.disabled = false;
-    addBtn.textContent = 'Agregar';
-    addBtn.classList.remove('agotado-btn');
-    addBtn.style.background = '';
-    addBtn.style.color = '';
-
-    // Si el producto está agotado, aplicar solo a ese
-    if (!disponible) {
-      addBtn.disabled = true;
-      addBtn.textContent = 'Agotado';
-      addBtn.classList.add('agotado-btn');
-      addBtn.style.background = '#ccc';
-      addBtn.style.color = '#666';
-    }
-  });
-}
-
-
-// Aplica disponibilidad a los extras dentro del modal (usa key 'extra:{name}')
-async function applyExtrasAvailability(modalEl = document) {
-  let status = {};
-
-  try {
-    const res = await fetch(SCRIPT_URL + '?t=' + Date.now());
-    const data = await res.json();
-
-    // 🔥 construimos el objeto de estado de forma robusta
-    data.forEach(item => {
-      const rawId = item.id ? String(item.id).trim() : "";
-      const isAvailable = String(item.disponible).toLowerCase() === 'true' || item.disponible === true;
-      status[rawId] = isAvailable;
-
-      // si el id empieza por "extra" o es de tipo extra, lo duplicamos también como extra:Nombre
-      if (rawId && !rawId.startsWith("extra:") && rawId.toLowerCase().includes("extra")) {
-        status[`extra:${rawId.replace(/^extra:?/, "").trim()}`] = isAvailable;
-      }
-    });
-
-    localStorage.setItem('productStatus', JSON.stringify(status));
-  } catch (err) {
-    status = JSON.parse(localStorage.getItem('productStatus')) || {};
-    console.warn('⚠️ applyExtrasAvailability: usando cache local', err);
-  }
-
-  // aplicamos los estilos
-  modalEl.querySelectorAll('.extras-list label').forEach(label => {
-    const checkbox = label.querySelector('input[type="checkbox"]');
-    if (!checkbox) return;
-
-    const name = checkbox.dataset.name?.trim() || "";
-    const id = checkbox.dataset.id?.trim() || "";
-
-    const keyById = status[id];
-    const keyByName = status[`extra:${name}`];
-
-    const disponible = !(
-      keyById === false ||
-      keyByName === false ||
-      String(keyById).toLowerCase() === 'false' ||
-      String(keyByName).toLowerCase() === 'false'
-    );
-
-    const plusBtn = label.querySelector('.plus-extra');
-    const minusBtn = label.querySelector('.minus-extra');
-    const qtyDisplay = label.querySelector('.extra-qty');
-
-    if (!disponible) {
-      label.classList.add('agotado');
-      checkbox.disabled = true;
-      checkbox.checked = false;
-      if (plusBtn) plusBtn.disabled = true;
-      if (minusBtn) minusBtn.disabled = true;
-      if (qtyDisplay) qtyDisplay.textContent = 'Agotado';
-      label.style.opacity = '0.5';
-    } else {
-      label.classList.remove('agotado');
-      checkbox.disabled = false;
-      if (plusBtn) plusBtn.disabled = false;
-      if (minusBtn) minusBtn.disabled = false;
-      if (qtyDisplay && qtyDisplay.textContent === 'Agotado') qtyDisplay.textContent = '0';
-      label.style.opacity = '';
-    }
-  });
-}
-
-
-
-
 
 
 // ---------- MINI MODAL CLEAN ----------
@@ -812,13 +616,15 @@ function openProductModal(id, cartIndex = null) {
   const p = products.find(x => x.id === id);
   if (!p) return;
 
-  // ======== NUEVO: tamaño seleccionado (primer tamaño por defecto) ========
-  let selectedSize = p.sizes ? p.sizes[0] : { id: p.id, price: p.price, image: p.image, label: '' };
+  // ===== TAMAÑO SELECCIONADO =====
+  let selectedSize = p.sizes
+    ? p.sizes[0]
+    : { id: p.id, price: p.price, image: p.image, label: "" };
 
-  // === CREAR OVERLAY ===
+  // ===== OVERLAY =====
   const overlay = document.createElement("div");
   overlay.className = "product-overlay";
-  
+
   overlay.innerHTML = `
     <div class="product-sheet">
       <div class="modal-header">
@@ -835,7 +641,7 @@ function openProductModal(id, cartIndex = null) {
           <p>${p.desc}</p>
 
           ${p.sizes ? `
-            <h3>Tamaño</h3>
+            <h3>Variedad</h3>
             <div class="size-selector">
               ${p.sizes.map(s => `
                 <label class="size-option">
@@ -846,14 +652,16 @@ function openProductModal(id, cartIndex = null) {
             </div>
           ` : ""}
 
-          ${ p.extras?.length ? `
+          ${p.extras?.length ? `
             <h3>Adiciones</h3>
             <div class="extras-list">
-              ${p.extras.map((e, i) => `
+              ${p.extras.map(e => `
                 <label>
-                  <input type="checkbox" data-id="${e.id}" data-name="${e.name}" data-price="${e.price}">
+                  <input type="checkbox"
+                         data-key="${e.name}"
+                         data-price="${e.price}">
                   <span>${e.name}</span>
-                  <span class="extra-controls" data-index="${i}">
+                  <span class="extra-controls">
                     <button class="minus-extra">−</button>
                     <span class="extra-qty">0</span>
                     <button class="plus-extra">+</button>
@@ -862,7 +670,7 @@ function openProductModal(id, cartIndex = null) {
                 </label>
               `).join("")}
             </div>
-          ` : "" }
+          ` : ""}
 
           <div class="quantity">
             <button class="minus">−</button>
@@ -871,7 +679,7 @@ function openProductModal(id, cartIndex = null) {
           </div>
 
           <button class="add-btn">
-            ${cartIndex !== null ? 'Actualizar' : 'Agregar'} 
+            ${cartIndex !== null ? "Actualizar" : "Agregar"}
             <span class="price">$${numberWithCommas(selectedSize.price)}</span>
           </button>
         </div>
@@ -881,22 +689,24 @@ function openProductModal(id, cartIndex = null) {
 
   document.body.appendChild(overlay);
 
-  // ---- Cierre ----
-  overlay.querySelector(".close").addEventListener("click", () => overlay.remove());
-  overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
+  // ===== CERRAR =====
+  overlay.querySelector(".close").onclick = () => overlay.remove();
+  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
 
   // ===== VARIABLES =====
   let qty = 1;
   const qtyEl = overlay.querySelector(".qty");
   const priceEl = overlay.querySelector(".price");
-  const extrasQty = Array(p.extras?.length || 0).fill(0);
   const extrasInputs = overlay.querySelectorAll(".extras-list input");
 
-  // ===== SI ES EDICIÓN =====
+  // 🔐 ESTADO ROBUSTO DE EXTRAS
+  const extrasState = {};
+  // { "Tocineta": { qty: 3, price: 3000 } }
+
+  // ===== EDICIÓN =====
   if (cartIndex !== null) {
     const item = cart[cartIndex];
 
-    // Encontrar el tamaño usado
     if (p.sizes) {
       selectedSize = p.sizes.find(s => s.id === item.sizeId) || p.sizes[0];
       overlay.querySelector("#product-img").src = selectedSize.image;
@@ -908,81 +718,135 @@ function openProductModal(id, cartIndex = null) {
 
     if (item.extras?.length) {
       item.extras.forEach(e => {
-        const idx = p.extras.findIndex(pe => pe.name === e.name);
-        if (idx >= 0) extrasQty[idx] = e.qty;
+        extrasState[e.name] = { qty: e.qty, price: e.price };
+      });
+
+      extrasInputs.forEach(input => {
+        const key = input.dataset.key;
+        if (extrasState[key]) {
+          input.checked = true;
+          input.closest("label").querySelector(".extra-qty").textContent =
+            extrasState[key].qty;
+        }
       });
     }
-
-    extrasInputs.forEach((input, i) => {
-      input.checked = extrasQty[i] > 0;
-      input.closest("label").querySelector(".extra-qty").textContent = extrasQty[i];
-    });
   }
 
-  // ===== UPDATE PRICE =====
+  // ===== PRECIO FINAL (CORREGIDO) =====
   function updatePrice() {
-    const extrasTotal = (p.extras || [])
-      .reduce((sum, e, i) => sum + e.price * extrasQty[i], 0);
+    let extrasTotal = 0;
 
-    const total = (selectedSize.price + extrasTotal) * qty;
+    Object.values(extrasState).forEach(e => {
+      extrasTotal += e.price * e.qty;
+    });
+
+    // 🔑 CLAVE: el producto se multiplica, los extras NO
+    const total = (selectedSize.price * qty) + extrasTotal;
+
     priceEl.textContent = `$${numberWithCommas(total)}`;
   }
 
   updatePrice();
 
-  // ===== CAMBIAR TAMAÑO DINÁMICAMENTE =====
+  // ===== CAMBIO DE TAMAÑO =====
   overlay.querySelectorAll("input[name='size']").forEach(radio => {
-    radio.addEventListener("change", e => {
-      const sizeId = e.target.value;
-      selectedSize = p.sizes.find(s => s.id === sizeId);
-
+    radio.onchange = e => {
+      selectedSize = p.sizes.find(s => s.id === e.target.value);
       overlay.querySelector("#product-img").src = selectedSize.image;
-
       updatePrice();
-    });
+    };
   });
 
   // ===== CANTIDAD =====
-  overlay.querySelector(".plus").addEventListener("click", () => { qty++; qtyEl.textContent = qty; updatePrice(); });
-  overlay.querySelector(".minus").addEventListener("click", () => { if (qty > 1) qty--; qtyEl.textContent = qty; updatePrice(); });
+  overlay.querySelector(".plus").onclick = () => {
+    qty++;
+    qtyEl.textContent = qty;
+    updatePrice();
+  };
 
-  // ===== ADICIONES =====
-  overlay.querySelectorAll(".plus-extra").forEach(btn => {
-    const i = parseInt(btn.parentElement.dataset.index);
-    const qtyDisplay = btn.parentElement.querySelector(".extra-qty");
-
-    btn.addEventListener("click", () => {
-      extrasQty[i]++;
-      qtyDisplay.textContent = extrasQty[i];
-      extrasInputs[i].checked = true;
+  overlay.querySelector(".minus").onclick = () => {
+    if (qty > 1) {
+      qty--;
+      qtyEl.textContent = qty;
       updatePrice();
-    });
-  });
+    }
+  };
 
-  overlay.querySelectorAll(".minus-extra").forEach(btn => {
-    const i = parseInt(btn.parentElement.dataset.index);
-    const qtyDisplay = btn.parentElement.querySelector(".extra-qty");
+  // ===== CHECKBOX EXTRAS =====
+  extrasInputs.forEach(input => {
+    const key = input.dataset.key;
+    const price = Number(input.dataset.price);
+    const qtyEl = input.closest("label").querySelector(".extra-qty");
 
-    btn.addEventListener("click", () => {
-      if (extrasQty[i] > 0) {
-        extrasQty[i]--;
-        qtyDisplay.textContent = extrasQty[i];
-        extrasInputs[i].checked = extrasQty[i] > 0;
-        updatePrice();
+    input.onchange = () => {
+      if (input.checked) {
+        extrasState[key] = { qty: 1, price };
+        qtyEl.textContent = 1;
+      } else {
+        delete extrasState[key];
+        qtyEl.textContent = 0;
       }
-    });
+      updatePrice();
+    };
   });
 
-  // ===== AGREGAR AL CARRITO =====
-  overlay.querySelector(".add-btn").addEventListener("click", () => {
-    const extras = (p.extras || [])
-      .map((e, i) => ({ name: e.name, price: e.price, qty: extrasQty[i] }))
-      .filter(e => e.qty > 0);
+  // ===== + EXTRA =====
+  overlay.querySelectorAll(".plus-extra").forEach(btn => {
+    btn.onclick = () => {
+      const label = btn.closest("label");
+      const input = label.querySelector("input");
+      const key = input.dataset.key;
+      const price = Number(input.dataset.price);
+      const qtyEl = label.querySelector(".extra-qty");
+
+      if (!extrasState[key]) {
+        extrasState[key] = { qty: 0, price };
+        input.checked = true;
+      }
+
+      extrasState[key].qty++;
+      qtyEl.textContent = extrasState[key].qty;
+      updatePrice();
+    };
+  });
+
+  // ===== − EXTRA =====
+  overlay.querySelectorAll(".minus-extra").forEach(btn => {
+    btn.onclick = () => {
+      const label = btn.closest("label");
+      const input = label.querySelector("input");
+      const key = input.dataset.key;
+      const qtyEl = label.querySelector(".extra-qty");
+
+      if (!extrasState[key]) return;
+
+      extrasState[key].qty--;
+
+      if (extrasState[key].qty <= 0) {
+        delete extrasState[key];
+        input.checked = false;
+        qtyEl.textContent = 0;
+      } else {
+        qtyEl.textContent = extrasState[key].qty;
+      }
+
+      updatePrice();
+    };
+  });
+
+  // ===== AGREGAR / ACTUALIZAR =====
+  overlay.querySelector(".add-btn").onclick = () => {
+
+    const extras = Object.entries(extrasState).map(([name, e]) => ({
+      name,
+      price: e.price,
+      qty: e.qty
+    }));
 
     const item = {
       productId: p.id,
       sizeId: selectedSize.id,
-      title: `${p.title} (${selectedSize.label})`,
+      title: selectedSize.label ? `${p.title} (${selectedSize.label})` : p.title,
       price: selectedSize.price,
       qty,
       image: selectedSize.image,
@@ -1000,8 +864,11 @@ function openProductModal(id, cartIndex = null) {
     updateCartBadge();
     overlay.remove();
     cartDrawer.classList.remove("hidden");
-  });
+  };
 }
+
+
+
 
 
 
@@ -1026,59 +893,6 @@ function addToCart(item) {
   updateCartBadge();
 }
 
-// ============Descargar QR=================
-document.addEventListener("click", (e) => {
-  // Usa closest para soportar clicks sobre el SVG interno de FontAwesome
-  const btn = e.target.closest && e.target.closest(".qr-download");
-  if (!btn) return;
-
-  const imgPath = btn.dataset.img;
-  if (!imgPath) {
-    console.warn("qr-download sin data-img");
-    return;
-  }
-
-  // helper para descargar
-  const downloadImage = (url) => {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = url.split("/").pop();
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
-
-  // Si SweetAlert2 no está disponible, fallback a confirm nativo
-  if (typeof Swal === "undefined") {
-    console.warn("SweetAlert2 (Swal) no disponible. Usando confirm nativo.");
-    const ok = confirm(
-      "Puedes pagar escaneando nuestros códigos QR de Nequi o Bancolombia.\n\nTambién puedes descargar los QR. ¿Descargar ahora?"
-    );
-    if (ok) downloadImage(imgPath);
-    return;
-  }
-
-  // SweetAlert2 disponible -> mostrar alerta antes de descargar
-  Swal.fire({
-    icon: "info",
-    title: "Pago con QR",
-    html: `
-      Puedes pagar escaneando nuestros códigos QR de <strong>Nequi</strong> o <strong>Bancolombia</strong>.<br><br>
-      También puedes <strong>descargar los QR</strong> dando clic en el icono de descarga.
-    `,
-    showCancelButton: true,
-    confirmButtonText: "Descargar",
-    cancelButtonText: "Cancelar",
-    confirmButtonColor: "#ff4b4b"
-  }).then(result => {
-    if (result.isConfirmed) downloadImage(imgPath);
-  });
-});
-
-
-// ============Fin de codigo de Descarga QR=================
-
-
 // Guardar en localStorage
 function persistCart() {
   localStorage.setItem('tb_cart', JSON.stringify(cart));
@@ -1095,8 +909,9 @@ function updateCartBadge() {
 // ---------- refreshCartUI CORREGIDA PARA REFLEJAR CAMBIOS ----------
 function refreshCartUI() {
   cartItemsEl.innerHTML = '';
+
   if (cart.length === 0) {
-    cartItemsEl.innerHTML = '<div class="empty">Tu carrito está vacío 🍦</div>';
+    cartItemsEl.innerHTML = '<div class="empty">Tu carrito está vacío 🍔</div>';
     cartSubtotalEl.textContent = '$0';
     cartDeliveryEl.textContent = '$0';
     cartTotalEl.textContent = '$0';
@@ -1107,18 +922,27 @@ function refreshCartUI() {
   let subtotal = 0;
 
   cart.forEach((item, idx) => {
-    // --- CALCULAR PRECIO REAL DEL ITEM CON EXTRAS ---
-    const extrasTotal = item.extras?.reduce((sum, e) => sum + e.price * e.qty, 0) || 0;
-    const itemUnitPrice = item.price - extrasTotal; // precio base
-    const itemTotal = (itemUnitPrice + extrasTotal) * item.qty;
+
+    // ===== TOTAL DE EXTRAS (NO SE MULTIPLICA POR qty) =====
+    const extrasTotal =
+      item.extras?.reduce((sum, e) => sum + (e.price * e.qty), 0) || 0;
+
+    // 🔑 CLAVE: producto * cantidad + extras
+    const itemTotal = (item.price * item.qty) + extrasTotal;
+
     subtotal += itemTotal;
 
     const extrasText = item.extras?.length
-      ? item.extras.map(e => `+ ${e.name} x${e.qty} ($${numberWithCommas(e.price * e.qty)})`).join('<br>')
+      ? item.extras
+          .map(e =>
+            `+ ${e.name} x${e.qty} ($${numberWithCommas(e.price * e.qty)})`
+          )
+          .join('<br>')
       : '';
 
     const div = document.createElement('div');
     div.className = 'cart-item';
+
     div.innerHTML = `
       <img class="cart-item-img" src="${item.image}" alt="${item.title}">
       <div class="info">
@@ -1136,7 +960,7 @@ function refreshCartUI() {
       </div>
     `;
 
-    // --- CONTROL DE CANTIDAD ---
+    // ===== CONTROL DE CANTIDAD =====
     div.querySelector('.plus').addEventListener('click', () => {
       item.qty++;
       persistCart();
@@ -1153,7 +977,7 @@ function refreshCartUI() {
       refreshCartUI();
     });
 
-    // --- ELIMINAR PRODUCTO ---
+    // ===== ELIMINAR =====
     div.querySelector('.remove-btn').addEventListener('click', () => {
       if (confirm(`¿Eliminar "${item.title}" del carrito?`)) {
         cart.splice(idx, 1);
@@ -1162,11 +986,15 @@ function refreshCartUI() {
       }
     });
 
-    // --- EDITAR PRODUCTO DESDE EL CARRITO ---
+    // ===== EDITAR =====
     div.addEventListener('click', (e) => {
-      if (!e.target.classList.contains('minus') && !e.target.classList.contains('plus') && !e.target.classList.contains('remove-btn')) {
-        cartDrawer.classList.add('hidden'); // esconder carrito
-        openProductModal(item.productId, idx); // enviar índice para edición
+      if (
+        !e.target.classList.contains('minus') &&
+        !e.target.classList.contains('plus') &&
+        !e.target.classList.contains('remove-btn')
+      ) {
+        cartDrawer.classList.add('hidden');
+        openProductModal(item.productId, idx);
       }
     });
 
@@ -1175,9 +1003,11 @@ function refreshCartUI() {
 
   cartSubtotalEl.textContent = `$${numberWithCommas(subtotal)}`;
   cartDeliveryEl.textContent = `$${numberWithCommas(DELIVERY_FEE)}`;
-  cartTotalEl.textContent = `$${numberWithCommas(subtotal)}`;
+  cartTotalEl.textContent = `$${numberWithCommas(subtotal + DELIVERY_FEE)}`;
   updateCartBadge();
 }
+
+
 
 
 
@@ -1207,7 +1037,17 @@ function openCheckout() {
   }
 
   // 🔹 Recalcular subtotal actual (incluyendo extras)
-const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+// 🔥 Recalcular subtotal REAL (incluye extras)
+let subtotal = 0;
+
+cart.forEach(item => {
+  const extrasTotal =
+    item.extras?.reduce((sum, e) => sum + e.price * e.qty, 0) || 0;
+
+  const itemTotal = (item.price * item.qty) + extrasTotal;
+  subtotal += itemTotal;
+});
+
 
 
   const delivery = 0; // por defecto
@@ -1238,7 +1078,7 @@ const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
       const deliveryEl = document.getElementById('cart-delivery');
       const totalCheckoutEl = document.getElementById('cart-total-checkout');
 
-      const DELIVERY_FEE = 5000;
+      const DELIVERY_FEE = 0;
       const delivery = (method === 'domicilio' && subtotal > 0) ? DELIVERY_FEE : 0;
       const totalUpdated = subtotal + delivery;
 
@@ -1272,31 +1112,40 @@ function updateCheckoutTotals() {
   const deliveryEl = document.getElementById('cart-delivery-checkout');
   const totalEl = document.getElementById('cart-total-checkout');
 
-  const DELIVERY_FEE = 5000; // mismo valor usado en refreshCartUI
+  const DELIVERY_FEE = 0;
 
   // Mostrar u ocultar campo de dirección
   addressLabel.classList.toggle('hidden', method !== 'domicilio');
 
-  // 🧾 Heredamos los valores que ya calcula refreshCartUI()
-  const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
+  // 🔥 CALCULAR SUBTOTAL EXACTO (CON EXTRAS)
+let subtotal = 0;
 
-  // 🚚 Si el método es domicilio, se suma el envío
+cart.forEach(item => {
+  const extrasTotal =
+    item.extras?.reduce((sum, e) => sum + e.price * e.qty, 0) || 0;
+
+  const itemTotal = (item.price * item.qty) + extrasTotal;
+  subtotal += itemTotal;
+});
+
+  // Envío
   const delivery = method === 'domicilio' && subtotal > 0 ? DELIVERY_FEE : 0;
   const total = subtotal + delivery;
 
   // Mostrar/ocultar fila de envío
   envioRow.classList.toggle('hidden', method !== 'domicilio');
 
-  // ✅ Actualizar DOM (heredado del refreshCartUI, con ajuste solo si hay envío)
-  subtotalEl.textContent = document.getElementById('cart-subtotal').textContent;
-  deliveryEl.textContent = document.getElementById('cart-delivery').textContent;
-  totalEl.textContent = method === 'domicilio'
-    ? `$${numberWithCommas(total)}`
-    : document.getElementById('cart-total-checkout').textContent;
+  // Actualizar valores visibles
+  subtotalEl.textContent = `$${numberWithCommas(subtotal)}`;
+  deliveryEl.textContent = `$${numberWithCommas(delivery)}`;
+  totalEl.textContent = `$${numberWithCommas(total)}`;
 }
 
 
+
 checkoutForm.addEventListener('change', updateCheckoutTotals);
+
+
 
 
 
@@ -1307,23 +1156,8 @@ const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbwm_1k9_4u68gA
 
 // Envío por WhatsApp
 // ✅ Escucha del formulario de checkout
-checkoutForm.addEventListener('submit', async (e) => {
+checkoutForm.addEventListener('submit', (e) => {
   e.preventDefault();
-
-  // 🔸 Función para registrar en Google Sheets
-  async function registrarPedidoEnSheets(orderData) {
-    try {
-      await fetch(GOOGLE_SHEET_API, {
-        method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify(orderData),
-        headers: { "Content-Type": "application/json" },
-      });
-      alert("✅ Pedido registrado exitosamente");
-    } catch (err) {
-      console.error("❌ Error al registrar en Google Sheets:", err);
-    }
-  }
 
   // Obtener datos del formulario
   const fd = new FormData(checkoutForm);
@@ -1337,7 +1171,6 @@ checkoutForm.addEventListener('submit', async (e) => {
   let textParts = [];
   let subtotal = 0;
 
-  // 🧾 Cabecera del mensaje
   textParts.push('🧾 *Nuevo Pedido - Oscar La Parrilla 🍨✅*');
   textParts.push(`👤 Cliente: ${clientName}`);
   textParts.push(`📞 Teléfono: ${clientPhone}`);
@@ -1347,26 +1180,23 @@ checkoutForm.addEventListener('submit', async (e) => {
   textParts.push('');
   textParts.push('🍨 *Detalle del pedido:*');
 
-  // 🧮 Procesar carrito
   cart.forEach(item => {
     const extras = item.extras || [];
-    const extrasLines = extras.map(e => `   ➕ ${e.qty}x ${e.name} ($${numberWithCommas(e.price * e.qty)})`).join('\n');
+    const extrasLines = extras.map(e => 
+      `   ➕ ${e.qty}x ${e.name} ($${numberWithCommas(e.price * e.qty)})`
+    ).join('\n');
+
     const extrasSum = extras.reduce((sum, e) => sum + e.price * e.qty, 0);
     const itemTotal = (item.price + extrasSum) * item.qty;
     subtotal += itemTotal;
 
     textParts.push(`${item.qty}x ${item.title} — *$${numberWithCommas(item.price * item.qty)}*`);
     if (extrasLines) textParts.push(extrasLines);
-
-    if (item.removed?.length) {
-      textParts.push(`   ⚠️ Toppings removidos: ${item.removed.join(', ')}`);
-    }
   });
 
   const delivery = method === 'domicilio' ? DELIVERY_FEE : 0;
   const total = subtotal + delivery;
 
-  // Totales
   textParts.push('');
   textParts.push(`🧮 Subtotal: $${numberWithCommas(subtotal)}`);
   textParts.push(method === 'domicilio'
@@ -1375,7 +1205,14 @@ checkoutForm.addEventListener('submit', async (e) => {
   textParts.push(`💰 *Total: $${numberWithCommas(total)}*`);
   if (notes) textParts.push(`📝 Notas: ${notes}`);
 
-  // 🧾 Crear objeto de pedido para Google Sheets
+  const bp = String(BUSINESS_PHONE || '').replace(/\D/g, '');
+  const msg = encodeURIComponent(textParts.join('\n'));
+  const waUrl = `https://wa.me/${bp}?text=${msg}`;
+
+  // 🟢 1. REDIRECCIONAR INMEDIATAMENTE (NO BLOQUEABLE)
+  window.location.href = waUrl;
+
+  // 🟡 2. ENVIAR A SHEETS EN SEGUNDO PLANO
   const orderData = {
     fecha: new Date().toLocaleString(),
     nombre: clientName,
@@ -1393,19 +1230,14 @@ checkoutForm.addEventListener('submit', async (e) => {
     }))
   };
 
-  // 📤 Registrar en Google Sheets antes de abrir WhatsApp
-  await registrarPedidoEnSheets(orderData);
+  fetch(GOOGLE_SHEET_API, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify(orderData),
+    headers: { "Content-Type": "application/json" },
+    keepalive: true // 🔑 importante para que no se cancele al redireccionar
+  });
 
-  // ✅ Enviar mensaje por WhatsApp
-  const bp = String(BUSINESS_PHONE || '').replace(/\D/g, '');
-  if (!bp || bp.length < 8) {
-    alert('Configura BUSINESS_PHONE en app.js con el número del negocio.');
-    return;
-  }
-
-  const msg = encodeURIComponent(textParts.join('\n'));
-  const waUrl = `https://wa.me/${bp}?text=${msg}`;
-  window.open(waUrl, '_blank');
 });
 
 
@@ -1414,23 +1246,12 @@ checkoutForm.addEventListener('submit', async (e) => {
 
 
 // ---------- Utilidades ----------
-function bindEvents() {
+function bindEvents(){
   navBtns.forEach(b=> b.addEventListener('click', ()=> setActiveCategory(b.dataset.cat)));
   cartCountEl.addEventListener('dblclick', ()=> { if(confirm('Vaciar carrito?')){ cart = []; persistCart(); refreshCartUI(); } });
   checkoutModal.addEventListener('click', (e)=> { if(e.target === checkoutModal) checkoutModal.classList.add('hidden'); });
   searchInput.addEventListener('input', ()=> renderProducts(activeCategory));
-
-  // ✅ Delegación para botones .add
-  catalogEl.addEventListener('click', (e) => {
-    const btn = e.target.closest('.add');
-    if (!btn) return;
-    if (btn.disabled) return;
-    const id = btn.dataset.id;
-    if (!id) return;
-    openProductModal(id);
-  });
 }
-
 
 function capitalize(s){ return String(s || '').charAt(0).toUpperCase() + String(s || '').slice(1); }
 function numberWithCommas(x){ return String(x).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
@@ -1477,26 +1298,25 @@ sideMenu.addEventListener('click', (e) => {
 
 // ====== FORMULARIO DE PAGO ======
 
-document.addEventListener("DOMContentLoaded", () => { 
-  // 🧾 Checkout, métodos de pago, domicilio...
+document.addEventListener("DOMContentLoaded", () => {
   const paymentSelect = document.getElementById("payment-method");
   const transferInfo = document.getElementById("transfer-info");
   const methodRadios = document.querySelectorAll('input[name="method"]');
   const addressLabel = document.getElementById("address-label");
   const envioRow = document.getElementById("envio-row");
   const cartDelivery = document.getElementById("cart-delivery");
-  const DELIVERY_FEE = 5000;
+  const DELIVERY_FEE = 0; // 💰 valor del domicilio
   const accountNumber = document.getElementById("account-number");
   const copyBtn = document.getElementById("copy-account");
 
-  // === Lógica del checkout ===
+  // 🔸 Mostrar u ocultar dirección según método de entrega
   methodRadios.forEach(radio => {
     radio.addEventListener("change", () => {
       if (radio.value === "domicilio" && radio.checked) {
         addressLabel.classList.remove("hidden");
         envioRow.classList.remove("hidden");
         cartDelivery.textContent = `$${DELIVERY_FEE.toLocaleString()}`;
-      } else {
+      } else if (radio.value === "recoger" && radio.checked) {
         addressLabel.classList.add("hidden");
         envioRow.classList.add("hidden");
         cartDelivery.textContent = "$0";
@@ -1504,10 +1324,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // 🔸 Mostrar info bancaria solo si selecciona transferencia
   paymentSelect.addEventListener("change", () => {
-    transferInfo.classList.toggle("hidden", paymentSelect.value !== "transferencia");
+    if (paymentSelect.value === "transferencia") {
+      transferInfo.classList.remove("hidden");
+    } else {
+      transferInfo.classList.add("hidden");
+    }
   });
 
+  // 🔸 Copiar número de cuenta
   copyBtn.addEventListener("click", () => {
     navigator.clipboard.writeText(accountNumber.textContent.trim())
       .then(() => {
@@ -1520,84 +1346,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch(() => alert("No se pudo copiar"));
   });
-
-  // === 🔁 SINCRONIZACIÓN DE DISPONIBILIDAD ===
-  function syncProductStatus() {
-    const status = JSON.parse(localStorage.getItem('productStatus')) || {};
-    document.querySelectorAll('.product-card').forEach(card => {
-      const id = card.dataset.id;
-      const btn = card.querySelector('.btn-add');
-      const label = card.querySelector('.status-label');
-
-      if (status[id] === false) {
-        card.classList.add('agotado');
-        if (btn) {
-          btn.disabled = true;
-          btn.textContent = 'Agotado';
-          btn.style.background = '#ccc';
-          btn.style.color = '#666';
-        }
-        if (label) {
-          label.textContent = 'Agotado';
-          label.style.color = '#f44336';
-        }
-      } else {
-        card.classList.remove('agotado');
-        if (btn) {
-          btn.disabled = false;
-          btn.textContent = 'Añadir';
-          btn.style.background = '';
-          btn.style.color = '';
-        }
-        if (label) {
-          label.textContent = 'Disponible';
-          label.style.color = '#4CAF50';
-        }
-      }
-    });
-  }
-
-  function syncExtrasStatus() {
-    const status = JSON.parse(localStorage.getItem('productStatus')) || {};
-    document.querySelectorAll('.extra-item').forEach(extra => {
-      const id = extra.dataset.id;
-      const checkbox = extra.querySelector('input[type="checkbox"]');
-      const plusBtn = extra.querySelector('.plus');
-      const minusBtn = extra.querySelector('.minus');
-
-      if (status[id] === false) {
-        extra.classList.add('agotado');
-        if (checkbox) checkbox.disabled = true;
-        if (plusBtn) plusBtn.disabled = true;
-        if (minusBtn) minusBtn.disabled = true;
-      } else {
-        extra.classList.remove('agotado');
-        if (checkbox) checkbox.disabled = false;
-        if (plusBtn) plusBtn.disabled = false;
-        if (minusBtn) minusBtn.disabled = false;
-      }
-    });
-  }
-
-  // Llamadas iniciales
-  syncProductStatus();
-  syncExtrasStatus();
-
-  // En vivo (cada vez que el admin cambia algo)
-  window.addEventListener('storage', e => {
-    if (e.key === 'productStatus') {
-      syncProductStatus();
-      syncExtrasStatus();
-    }
-  });
-
-  // Fallback cada 3 segundos
-  setInterval(() => {
-    syncProductStatus();
-    syncExtrasStatus();
-  }, 3000);
 });
-
 
 
 // --- FORM MULTIPASO (compatible con checkout actual) ---
@@ -1657,31 +1406,66 @@ checkoutOverlay.addEventListener("click", (e) => {
 });
 
 
+// ============Descargar QR=================
+document.addEventListener("click", (e) => {
+  // Usa closest para soportar clicks sobre el SVG interno de FontAwesome
+  const btn = e.target.closest && e.target.closest(".qr-download");
+  if (!btn) return;
 
-
-
-
-
-// === Carrusel de promociones ===
-const track = document.querySelector('.banner-track');
-const slides = document.querySelectorAll('.banner-slide');
-const nextBtn = document.querySelector('.banner-btn.next');
-const prevBtn = document.querySelector('.banner-btn.prev');
-
-if (track && slides.length > 1) {
-  let index = 0;
-
-  function showSlide(i) {
-    index = (i + slides.length) % slides.length;
-    track.style.transform = `translateX(-${index * 100}%)`;
+  const imgPath = btn.dataset.img;
+  if (!imgPath) {
+    console.warn("qr-download sin data-img");
+    return;
   }
 
-  nextBtn.addEventListener('click', () => showSlide(index + 1));
-  prevBtn.addEventListener('click', () => showSlide(index - 1));
+  // helper para descargar
+  const downloadImage = (url) => {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = url.split("/").pop();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
-  // Auto-slide cada 5s
-  setInterval(() => showSlide(index + 1), 5000);
-}
+  // Si SweetAlert2 no está disponible, fallback a confirm nativo
+  if (typeof Swal === "undefined") {
+    console.warn("SweetAlert2 (Swal) no disponible. Usando confirm nativo.");
+    const ok = confirm(
+      "Puedes pagar escaneando nuestros códigos QR de Nequi o Bancolombia.\n\nTambién puedes descargar los QR. ¿Descargar ahora?"
+    );
+    if (ok) downloadImage(imgPath);
+    return;
+  }
+
+  // SweetAlert2 disponible -> mostrar alerta antes de descargar
+  Swal.fire({
+    icon: "info",
+    title: "Pago con QR",
+    html: `
+      Puedes pagar escaneando nuestros códigos QR de <strong>Nequi</strong> o <strong>Bancolombia</strong>.<br><br>
+      También puedes <strong>descargar los QR</strong> dando clic en el icono de descarga.
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Descargar",
+    cancelButtonText: "Cancelar",
+    background: "#0a0a0a",             // fondo negro
+    color: "#ffffff",                   // texto blanco
+    confirmButtonColor: "rgb(230, 213, 12)", // botón amarillo neón
+    cancelButtonColor: "#555555",       // cancel gris oscuro
+    iconColor: "rgb(230, 213, 12)"      // icono amarillo neón
+  }).then(result => {
+    if (result.isConfirmed) downloadImage(imgPath);
+  });
+});
+
+
+
+// ============Fin de codigo de Descarga QR=================
+
+
+
+
 
 
 
