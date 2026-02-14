@@ -1203,7 +1203,6 @@ const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbwm_1k9_4u68gA
 checkoutForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  // Obtener datos del formulario
   const fd = new FormData(checkoutForm);
   const clientName = fd.get('name')?.trim() || '';
   const clientPhone = fd.get('phone')?.trim() || '';
@@ -1213,48 +1212,71 @@ checkoutForm.addEventListener('submit', (e) => {
   const notes = fd.get('notes')?.trim() || '';
 
   let textParts = [];
-  let subtotal = 0;
 
-  textParts.push('🧾 *Nuevo Pedido - Oscar La Parrilla 🍨✅*');
+  // Cabecera
+  textParts.push('🧾 *Nuevo Pedido - Oscar La Parrilla🍔✅*');
   textParts.push(`👤 Cliente: ${clientName}`);
   textParts.push(`📞 Teléfono: ${clientPhone}`);
   textParts.push(`🚚 Tipo: ${method}`);
   if (method === 'domicilio') textParts.push(`🏠 Dirección: ${address}`);
   textParts.push(`💳 Pago: ${payment}`);
   textParts.push('');
-  textParts.push('🍨 *Detalle del pedido:*');
+  textParts.push('🍔 *Detalle del pedido:*');
 
-  cart.forEach(item => {
-    const extras = item.extras || [];
-    const extrasLines = extras.map(e => 
-      `   ➕ ${e.qty}x ${e.name} ($${numberWithCommas(e.price * e.qty)})`
-    ).join('\n');
+  let subtotal = 0;
 
-    const extrasSum = extras.reduce((sum, e) => sum + e.price * e.qty, 0);
-    const itemTotal = (item.price + extrasSum) * item.qty;
-    subtotal += itemTotal;
+cart.forEach(item => {
+  // Calcular precio de extras individualmente
+  const extras = item.extras || [];
+  const extrasLines = extras
+    .map(e => `   ➕ ${e.qty}x ${e.name} ($${numberWithCommas(e.price * e.qty)})`)
+    .join('\n');
 
-    textParts.push(`${item.qty}x ${item.title} — *$${numberWithCommas(item.price * item.qty)}*`);
-    if (extrasLines) textParts.push(extrasLines);
-  });
+  const extrasSum = extras.reduce((sum, e) => sum + e.price * e.qty, 0);
+
+  // 🔑 FIX: NO multiplicar extras por la cantidad del producto
+  const itemTotal = (item.price * item.qty) + extrasSum;
+  subtotal += itemTotal;
+
+  // Mostrar producto base
+  textParts.push(
+    `${item.qty}x ${item.title} — *$${numberWithCommas(item.price * item.qty)}*`
+  );
+
+  if (extrasLines) textParts.push(extrasLines);
+
+  // Toppings removidos
+  if (item.removed && item.removed.length) {
+    textParts.push(`   ⚠️ Toppings removidos: ${item.removed.join(', ')}`);
+  }
+});
 
   const delivery = method === 'domicilio' ? DELIVERY_FEE : 0;
   const total = subtotal + delivery;
 
+  // Resumen de totales
   textParts.push('');
   textParts.push(`🧮 Subtotal: $${numberWithCommas(subtotal)}`);
   textParts.push(method === 'domicilio'
     ? `🚗 Envío: $${numberWithCommas(delivery)}`
     : '🏪 Envío: Sin costo (recoge en el local)');
   textParts.push(`💰 *Total: $${numberWithCommas(total)}*`);
+
   if (notes) textParts.push(`📝 Notas: ${notes}`);
 
+  // Construir URL para WhatsApp
   const bp = String(BUSINESS_PHONE || '').replace(/\D/g, '');
+  if (!bp || bp.length < 8) {
+    alert('Configura BUSINESS_PHONE en app.js con el número del negocio.');
+    return;
+  }
+
   const msg = encodeURIComponent(textParts.join('\n'));
   const waUrl = `https://wa.me/${bp}?text=${msg}`;
 
-  // 🟢 1. REDIRECCIONAR INMEDIATAMENTE (NO BLOQUEABLE)
+   // 🟢 1. REDIRECCIONAR INMEDIATAMENTE (NO BLOQUEABLE)
   window.location.href = waUrl;
+ 
 
   // 🟡 2. ENVIAR A SHEETS EN SEGUNDO PLANO
   const orderData = {
@@ -1506,6 +1528,7 @@ document.addEventListener("click", (e) => {
 
 
 // ============Fin de codigo de Descarga QR=================
+
 
 
 
