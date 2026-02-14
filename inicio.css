@@ -333,6 +333,20 @@ body {
   opacity: 0.8;
 }
 
+.hero-bg{
+  animation:heroZoom 18s linear infinite alternate;
+}
+
+@keyframes heroZoom{
+  from{
+    transform:scale(1);
+  }
+  to{
+    transform:scale(1.12);
+  }
+}
+
+
 /* ====================================================================================
    PRODUCTO MÁS VENDIDO
 ==================================================================================== */
@@ -432,18 +446,25 @@ body {
   gap: 25px;
 }
 
-.service-card {
-  background: rgba(255,255,255,0.9);
-  padding: 25px;
-  border-radius: 18px;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
-  transition: 0.3s ease;
+.service-card{
+  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,0.15);
+  box-shadow:
+  0 8px 32px rgba(0,0,0,0.4),
+  inset 0 0 12px rgba(255,255,255,0.06);
+  padding:25px;
+  border-radius:22px;
+  transition:.45s cubic-bezier(.2,.8,.2,1);
 }
 
-.service-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 15px 25px rgba(0,0,0,0.18);
+.service-card:hover{
+  transform:translateY(-10px) scale(1.03);
+  box-shadow:
+  0 18px 60px rgba(0,0,0,0.6),
+  0 0 25px rgba(255,102,0,0.35);
 }
+
 
 .service-img {
   width: 100%;
@@ -466,56 +487,42 @@ body {
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px){
 
-  /* Carrusel visible en móvil */
-  .services-carousel {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-
-    gap: 15px;
-    padding: 10px;
-    margin-top: 20px;
-
-    scroll-behavior: auto;
-  }
-
-  .services-carousel::-webkit-scrollbar {
-    display: none;
-  }
-
-  .services-carousel .service-card {
-    min-width: 80%;
-    flex-shrink: 0;
-    scroll-snap-align: center;
-
-    padding: 18px;
-    border-radius: 18px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;   /* CENTRAR TODO */
-  }
-
-  /* 🔥 NUEVO — Todas las imágenes MISMO TAMAÑO + centradas + NO borrosas */
-  .services-carousel .service-img {
-    width: 100%;
-    max-width: 230px;      /* ← Controla que no se hagan gigantes */
-    height: 230px;         /* ← Tamaño uniforme */
-    object-fit: contain;   /* ← No recorta, no deforma, no borra */
-    display: block;
-    margin: 0 auto 15px;   /* ← Centrada dentro de la card */
-    border-radius: 12px;
-    background: #f2fbfe;      /* Fondo neutro si la imagen no llena */
-    padding: 5px;          /* Espacio visual */
-  }
-
-  .services-grid {
-    display: none;
-  }
-
+.services-carousel{
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+  padding:0 20px;
 }
+
+.services-carousel::-webkit-scrollbar{
+  display:none;
+}
+
+.services-carousel .service-card{
+  flex:0 0 100%;
+  scroll-snap-align:center;
+  scroll-snap-stop:always;
+  box-sizing:border-box;
+  padding:20px;
+}
+
+.services-carousel .service-img{
+  width:100%;
+  max-width:220px;
+  height:220px;
+  object-fit:contain;
+  margin:auto;
+}
+
+.services-grid{
+  display:none;
+}
+}
+
 
 /* ====================================================================================
    GALERÍA – GRID (DESKTOP)
@@ -545,35 +552,35 @@ body {
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width:768px){
 
-  .galeria-carousel {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-
-    gap: 15px;
-    margin-top: 20px;
-    padding: 10px;
-
-    scroll-behavior: auto;
-  }
-
-  .galeria-carousel img {
-    min-width: 80%;         /* Igual que servicios */
-    height: 380px;          /* Igual que servicios */
-    object-fit: cover;
-    border: 1px solid #e0882e;
-    border-radius: 14px;
-    /* box-shadow: 8px 0 20px #da6d2a; */
-    scroll-snap-align: center;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.2);
-  }
-
-  .galeria-grid {
-    display: none;
-  }
+.galeria-carousel{
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+  padding:0 20px;
 }
+
+.galeria-carousel::-webkit-scrollbar{
+  display:none;
+}
+
+.galeria-carousel img{
+  flex:0 0 100%;
+  scroll-snap-align:center;
+  scroll-snap-stop:always;
+  height:380px;
+  object-fit:cover;
+  border-radius:14px;
+}
+
+.galeria-grid{
+  display:none;
+}
+}
+
 
 
 
@@ -761,5 +768,67 @@ body {
 }
 
 /*Fin del footer*/
+
+
+
+/* =========================================
+   LOADER PREMIUM APP STYLE
+========================================= */
+#appLoader{
+  position: fixed;
+  inset:0;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999999;
+  transition:opacity .8s ease, visibility .8s ease;
+}
+
+#appLoader.hide{
+  opacity:0;
+  visibility:hidden;
+}
+
+.loader-logo{
+  width:130px;
+  animation:
+  pulseLogo 1.8s ease-in-out infinite,
+  fadeUp 1.2s ease forwards;
+}
+
+@keyframes pulseLogo{
+  0%,100%{
+    transform:scale(1);
+    filter:drop-shadow(0 0 0px #ff6600);
+  }
+  50%{
+    transform:scale(1.12);
+    filter:drop-shadow(0 0 25px #ff6600);
+  }
+}
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(40px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+
+.reveal{
+  opacity:0;
+  transform:translateY(60px) scale(.95);
+  transition:1s cubic-bezier(.2,.8,.2,1);
+}
+
+.reveal.show{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
 
 
