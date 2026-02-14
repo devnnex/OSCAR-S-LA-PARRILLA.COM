@@ -301,6 +301,15 @@
     <img src="images/wspp.png" alt="WhatsApp">
   </a>
 
+
+  <!-- ================= LOADER PREMIUM ================= -->
+<div id="appLoader">
+  <div class="loader-content">
+    <img src="images/logo.png" class="loader-logo">
+  </div>
+</div>
+
+
   <!-- SCRIPT DEL SIDEBAR + CARRUSEL MÓVIL -->
 <script>
   /* ---------------------------
@@ -366,24 +375,36 @@
         scrollStart: 0
       };
 
+      setTimeout(() => {
+  state.itemWidth = state.items[0].offsetWidth;
+}, 300);
+
+
       // ------------------------------------------
       // AUTOPLAY ESTABLE, SUAVECITO Y SIN DESFASES
       // ------------------------------------------
       const autoplayTick = () => {
-        if (state.dragging) return; // si está siendo tocado, no mover aún
 
-        // Recalcula index real basado en scroll cuando no se arrastra
-        const approxIndex = Math.round(carousel.scrollLeft / state.itemWidth);
-        state.index = approxIndex;
+  if (state.dragging) return;
 
-        // Avanza al siguiente
-        state.index = (state.index + 1) % items.length;
+  // recalcula ancho por si cambió el viewport
+  state.itemWidth = state.items[0].offsetWidth;
 
-        carousel.scrollTo({
-          left: state.itemWidth * state.index,
-          behavior: "smooth",
-        });
-      };
+  // index real actual
+  state.index = Math.round(state.carousel.scrollLeft / state.itemWidth);
+
+  // siguiente card
+  state.index = (state.index + 1) % state.items.length;
+
+  const target = state.index * state.itemWidth;
+
+  state.carousel.scrollTo({
+    left: target,
+    behavior: "smooth"
+  });
+
+};
+
 
       state.autoplay = setInterval(autoplayTick, AUTOPLAY_TIME);
 
@@ -452,6 +473,33 @@
 
 
 
+//LOADER PREMIUM WITH THE BRAND LOGO
+window.addEventListener("load",()=>{
+
+  const loader = document.getElementById("appLoader");
+
+  setTimeout(()=>{
+    loader.classList.add("hide");
+  },1600);
+
+});
+
+
+// ANIMACIONES DE SCROLL CON INTERSECTION OBSERVER
+const observer = new IntersectionObserver(entries=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){
+entry.target.classList.add("show");
+}
+});
+},{threshold:.2});
+
+document.querySelectorAll(
+".hero, .top-product, .pedido-section, .services, .galeria, .why-us, .ubicacion"
+).forEach(el=>{
+el.classList.add("reveal");
+observer.observe(el);
+});
 
 </script>
 
