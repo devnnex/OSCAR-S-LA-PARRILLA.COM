@@ -7,7 +7,1210 @@ const DELIVERY_FEE = 0; // tarifa por defecto de domicilio
 
 // ---------- Datos de ejemplo ----------
 const products = [
-  // ===== MENU INFANTIL =====
+//ANTOJITOS
+{
+  id: 'mazorca-mustang',
+  category: 'Antojitos',
+  title: 'Mazorca Mustang',
+  price: 13000,
+  desc: 'Mazorca en tusa asada a la parrilla bañada en salsa de la casa y queso rallado.',
+  ingredients: ['Mazorca asada', 'Salsa de la casa', 'Queso rallado'],
+  extras: [
+    { name: 'Queso adicional', price: 3000 },
+    { name: 'Tocineta adicional', price: 2000 }
+  ],
+  image: 'images/mazorca-mustang.png'
+},
+{
+  id: 'aros-cebolla-apanado',
+  category: 'Antojitos',
+  title: 'Aros de Cebolla Apanado',
+  price: 15000,
+  desc: '5 aros de cebolla apanados.',
+  ingredients: ['Cebolla', 'Apanado'],
+  extras: [
+    { name: 'Porción adicional de aros', price: 3000 },
+    { name: 'Salsa extra', price: 2000 }
+  ],
+  image: 'images/aros-cebolla-apanado.png'
+},
+{
+  id: 'papas-tesla',
+  category: 'Antojitos',
+  title: 'Papas Tesla',
+  price: 13000,
+  desc: 'Papas a la francesa y chorizo bañadas en salsa de la casa y queso rallado.',
+  ingredients: ['Papas a la francesa', 'Chorizo', 'Salsa de la casa', 'Queso rallado'],
+  extras: [
+    { name: 'Queso adicional', price: 3000 },
+    { name: 'Chorizo adicional', price: 2000 }
+  ],
+  image: 'images/papas-tesla.png'
+},
+{
+  id: 'patacones-civic',
+  category: 'Antojitos',
+  title: 'Patacones Civic',
+  price: 10000,
+  desc: 'Tres patacones en moneda: uno con queso costeño, otro con suero y otro con salsa de ceviche.',
+  ingredients: ['Patacones', 'Queso costeño', 'Suero', 'Salsa de ceviche'],
+  extras: [
+    { name: 'Porción adicional de patacones', price: 3000 },
+    { name: 'Salsa extra', price: 2000 }
+  ],
+  image: 'images/patacones-civic.png'
+},
+{
+  id: 'papas-fiat',
+  category: 'Antojitos',
+  title: 'Papas Fiat',
+  price: 13000,
+  desc: 'Papas a la francesa, tocineta ahumada, piña en cuadros, queso rallado y salsa de la casa.',
+  ingredients: ['Papas a la francesa', 'Tocineta ahumada', 'Piña', 'Queso rallado', 'Salsa de la casa'],
+  extras: [
+    { name: 'Queso adicional', price: 3000 },
+    { name: 'Tocineta adicional', price: 2000 }
+  ],
+  image: 'images/papas-fiat.png'
+},
+{
+  id: 'enchula-tus-papas',
+  category: 'Antojitos',
+  title: 'Enchula tus Papas',
+  price: 5000,
+  desc: 'Papas bañadas en queso rallado, tocineta ahumada y salsa de la casa.',
+  ingredients: ['Papas', 'Queso rallado', 'Tocineta ahumada', 'Salsa de la casa'],
+  extras: [
+    { name: 'Queso adicional', price: 3000 },
+    { name: 'Tocineta adicional', price: 2000 }
+  ],
+  image: 'images/enchula-tus-papas.png'
+}
+,
+
+{
+  id: 'b1',
+  category: 'Hamburguesas',
+  title: 'Oscar’s',
+  price: 48000,
+  desc: 'Pan, doble carne de 140gr a la parrilla, filete de pollo a la parrilla, pollo y carne desmenuzada, tocineta ahumada, queso fundido, salsa de queso cheddar, jamón, pepinillos y cebolla apanada.',
+  ingredients: [
+    'Pan',
+    'Doble carne 140gr a la parrilla',
+    'Filete de pollo a la parrilla',
+    'Pollo desmenuzado',
+    'Carne desmenuzada',
+    'Tocineta ahumada',
+    'Queso fundido',
+    'Salsa de queso cheddar',
+    'Jamón',
+    'Pepinillos',
+    'Cebolla apanada'
+  ],
+  image: 'images/oscars.png'
+},
+{
+  id: 'b2',
+  category: 'Hamburguesas',
+  title: 'Ferrari',
+  price: 26000,
+  desc: 'Pan, doble carne de 140gr a la parrilla, pollo desmenuzado, tocineta ahumada, jamón, queso, tomate y cebolla grillé.',
+  ingredients: [
+    'Pan',
+    'Doble carne 140gr a la parrilla',
+    'Pollo desmenuzado',
+    'Tocineta ahumada',
+    'Jamón',
+    'Queso',
+    'Tomate',
+    'Cebolla grillé'
+  ],
+  image: 'images/ferrari.png'
+},
+{
+  id: 'b3',
+  category: 'Hamburguesas',
+  title: 'Hummer',
+  price: 42000,
+  desc: 'Pan, triple carne de 140gr asada a la parrilla, pollo y carne desmenuzado, queso fundido, tocineta ahumada, jamón, tomate y cebolla grillé.',
+  ingredients: [
+    'Pan',
+    'Triple carne 140gr a la parrilla',
+    'Pollo desmenuzado',
+    'Carne desmenuzada',
+    'Queso fundido',
+    'Tocineta ahumada',
+    'Jamón',
+    'Tomate',
+    'Cebolla grillé'
+  ],
+  image: 'images/hummer.png'
+},
+{
+  id: 'b4',
+  category: 'Hamburguesas',
+  title: 'Mercedes Benz',
+  price: 24000,
+  desc: 'Pan, carne de 140gr a la parrilla, filete de pollo, tocineta ahumada, jamón, queso, tomate y cebolla grillé.',
+  ingredients: [
+    'Pan',
+    'Carne 140gr a la parrilla',
+    'Filete de pollo',
+    'Tocineta ahumada',
+    'Jamón',
+    'Queso',
+    'Tomate',
+    'Cebolla grillé'
+  ],
+  image: 'images/mercedes-benz.png'
+},
+{
+  id: 'b5',
+  category: 'Hamburguesas',
+  title: 'Grand Cherokee',
+  price: 26000,
+  desc: 'Pan, carne de 140gr a la parrilla, pollo desmenuzado, chorizo bañado en salsa BBQ, salsa de queso cheddar, tortilla de huevo, platanito rallado, tocineta ahumada, jamón, queso y cebolla grillé.',
+  ingredients: [
+    'Pan',
+    'Carne 140gr a la parrilla',
+    'Pollo desmenuzado',
+    'Chorizo en salsa BBQ',
+    'Salsa de queso cheddar',
+    'Tortilla de huevo',
+    'Platanito rallado',
+    'Tocineta ahumada',
+    'Jamón',
+    'Queso',
+    'Cebolla grillé'
+  ],
+  image: 'images/grand-cherokee.png'
+},
+{
+  id: 'b6',
+  category: 'Hamburguesas',
+  title: 'Dodge',
+  price: 23000,
+  desc: 'Pan, carne de 140gr a la parrilla, carne desmenuzada, jalapeños, pepinillos, pico de gallo, tocineta ahumada, jamón, queso y nachos.',
+  ingredients: [
+    'Pan',
+    'Carne 140gr a la parrilla',
+    'Carne desmenuzada',
+    'Jalapeños',
+    'Pepinillos',
+    'Pico de gallo',
+    'Tocineta ahumada',
+    'Jamón',
+    'Queso',
+    'Nachos'
+  ],
+  image: 'images/dodge.png'
+},
+{
+  id: 'b7',
+  category: 'Hamburguesas',
+  title: 'Toyota Ranchera',
+  price: 26000,
+  desc: 'Pan, carne de 140gr a la parrilla, pollo desmenuzado, chorizo, maíz, huevo frito, queso, jamón, tocineta ahumada y cebolla grillé.',
+  ingredients: [
+    'Pan',
+    'Carne 140gr a la parrilla',
+    'Pollo desmenuzado',
+    'Chorizo',
+    'Maíz',
+    'Huevo frito',
+    'Queso',
+    'Jamón',
+    'Tocineta ahumada',
+    'Cebolla grillé'
+  ],
+  image: 'images/toyota-ranchera.png'
+}
+,
+
+{
+  id: 'b8',
+  category: 'Hamburguesas',
+  title: 'Ford',
+  price: 22000,
+  desc: 'Pan, filete de pollo a la parrilla, carne desmenuzada, queso, jamón, tocineta ahumada, tomate y cebolla grillé.',
+  ingredients: [
+    'Pan',
+    'Filete de pollo a la parrilla',
+    'Carne desmenuzada',
+    'Queso',
+    'Jamón',
+    'Tocineta ahumada',
+    'Tomate',
+    'Cebolla grillé'
+  ],
+  image: 'images/ford.png'
+},
+{
+  id: 'b9',
+  category: 'Hamburguesas',
+  title: 'Renault 4',
+  price: 16500,
+  desc: 'Pan, 140gr de carne a la parrilla, jamón, queso, tomate y cebolla grillé.',
+  ingredients: [
+    'Pan',
+    'Carne 140gr a la parrilla',
+    'Jamón',
+    'Queso',
+    'Tomate',
+    'Cebolla grillé'
+  ],
+  image: 'images/renault-4.png'
+},
+{
+  id: 'b10',
+  category: 'Hamburguesas',
+  title: 'Chrysler',
+  price: 22000,
+  desc: 'Pan, filete de pollo apanado, queso, jamón, tomate, tocineta ahumada y cebolla grillé.',
+  ingredients: [
+    'Pan',
+    'Filete de pollo apanado',
+    'Queso',
+    'Jamón',
+    'Tomate',
+    'Tocineta ahumada',
+    'Cebolla grillé'
+  ],
+  image: 'images/chrysler.png'
+},
+{
+  id: 'b11',
+  category: 'Hamburguesas',
+  title: 'Mazda',
+  price: 22000,
+  desc: 'Pan, 140gr de carne a la parrilla, pollo desmenuzado, queso, jamón, tocineta ahumada, tomate y cebolla grillé.',
+  ingredients: [
+    'Pan',
+    'Carne 140gr a la parrilla',
+    'Pollo desmenuzado',
+    'Queso',
+    'Jamón',
+    'Tocineta ahumada',
+    'Tomate',
+    'Cebolla grillé'
+  ],
+  image: 'images/mazda.png'
+},
+{
+  id: 'b12',
+  category: 'Hamburguesas',
+  title: 'Morgan',
+  price: 22000,
+  desc: 'Pan, 140gr de carne a la parrilla, queso, suero costeño, queso rallado, platanito rallado, tocineta ahumada, jamón, tomate y cebolla grillé.',
+  ingredients: [
+    'Pan',
+    'Carne 140gr a la parrilla',
+    'Queso',
+    'Suero costeño',
+    'Queso rallado',
+    'Platanito rallado',
+    'Tocineta ahumada',
+    'Jamón',
+    'Tomate',
+    'Cebolla grillé'
+  ],
+  image: 'images/morgan.png'
+}
+,
+
+{
+  id: 'b13',
+  category: 'Hamburguesas',
+  title: 'Hamburguesa Camaro',
+  price: 40000,
+  desc: 'Pan artesanal, carne Angus de 170gr a la parrilla, deditos de queso costeño apanados, mermelada de tocineta ahumada y queso cheddar, acompañado con papas a la francesa artesanales.',
+  ingredients: [
+    'Pan artesanal',
+    'Carne Angus 170gr a la parrilla',
+    'Deditos de queso costeño apanados',
+    'Mermelada de tocineta ahumada',
+    'Queso cheddar',
+    'Papas a la francesa artesanales'
+  ],
+  image: 'images/camaro.png'
+},
+{
+  id: 'b14',
+  category: 'Hamburguesas',
+  title: 'Hamburguesa Fiat Cronos',
+  price: 40000,
+  desc: 'Pan artesanal, carne Angus de 170gr a la parrilla, chorizo asado a la parrilla, chimichurri argentino y queso cheddar, acompañado con papas a la francesa artesanales.',
+  ingredients: [
+    'Pan artesanal',
+    'Carne Angus 170gr a la parrilla',
+    'Chorizo asado a la parrilla',
+    'Chimichurri argentino',
+    'Queso cheddar',
+    'Papas a la francesa artesanales'
+  ],
+  image: 'images/fiat-cronos.png'
+},
+{
+  id: 'b15',
+  category: 'Hamburguesas',
+  title: "Hamburguesa Oscar's 2.0",
+  price: 46000,
+  desc: 'Pan artesanal, carne Angus de 170gr a la parrilla, filete de pollo apanado, pepinillos agridulces, cebolla y tocineta ahumada caramelizada en cerveza Club Colombia Dorada y queso cheddar, acompañado con papas a la francesa artesanales.',
+  ingredients: [
+    'Pan artesanal',
+    'Carne Angus 170gr a la parrilla',
+    'Filete de pollo apanado',
+    'Pepinillos agridulces',
+    'Cebolla',
+    'Tocineta ahumada caramelizada',
+    'Queso cheddar',
+    'Papas a la francesa artesanales'
+  ],
+  image: 'images/oscars-2.png'
+},
+{
+  id: 'b16',
+  category: 'Hamburguesas',
+  title: 'Jack Daniels',
+  price: 40000,
+  desc: 'Pan artesanal, carne Angus de 170gr a la parrilla, galleta de queso tempura, costillas de cerdo con salsa Jack Daniels y queso cheddar, acompañado con papas a la francesa artesanales.',
+  ingredients: [
+    'Pan artesanal',
+    'Carne Angus 170gr a la parrilla',
+    'Galleta de queso tempura',
+    'Costillas de cerdo',
+    'Salsa Jack Daniels',
+    'Queso cheddar',
+    'Papas a la francesa artesanales'
+  ],
+  image: 'images/jack-daniels.png'
+},
+{
+  id: 'b17',
+  category: 'Hamburguesas',
+  title: 'Hamburguesa Wrangler',
+  price: 40000,
+  desc: 'Pan artesanal, carne Angus de 170gr a la parrilla, tomates asados a la parrilla, tocineta ahumada, cebolla tempura y queso cheddar, acompañado con papas a la francesa artesanales.',
+  ingredients: [
+    'Pan artesanal',
+    'Carne Angus 170gr a la parrilla',
+    'Tomates asados a la parrilla',
+    'Tocineta ahumada',
+    'Cebolla tempura',
+    'Queso cheddar',
+    'Papas a la francesa artesanales'
+  ],
+  image: 'images/wrangler.png'
+},
+{
+  id: 'b18',
+  category: 'Hamburguesas',
+  title: 'Hamburguesa Jetta',
+  price: 40000,
+  desc: 'Pan artesanal, carne Angus de 170gr a la parrilla, maduritos caramelizados, tocineta ahumada, carne desmenuzada y queso cheddar, acompañado con papas a la francesa artesanales.',
+  ingredients: [
+    'Pan artesanal',
+    'Carne Angus 170gr a la parrilla',
+    'Maduritos caramelizados',
+    'Tocineta ahumada',
+    'Carne desmenuzada',
+    'Queso cheddar',
+    'Papas a la francesa artesanales'
+  ],
+  image: 'images/jetta.png'
+}
+,
+//PERROS CALIENTES
+{
+  id: 'p1',
+  category: 'Perros',
+  title: "Oscar's",
+  price: 28000,
+  desc: 'Pan, salchicha tipo americana, carne desmenuzada, trocitos de carne, pollo desmenuzado, trocitos de pollo, tocineta ahumada, piña en cuadritos, pepinillos y queso gratinado.',
+  ingredients: [
+    'Pan',
+    'Salchicha tipo americana',
+    'Carne desmenuzada',
+    'Trocitos de carne',
+    'Pollo desmenuzado',
+    'Trocitos de pollo',
+    'Tocineta ahumada',
+    'Piña en cuadritos',
+    'Pepinillos',
+    'Queso gratinado'
+  ],
+  image: 'images/perro-oscars.png'
+},
+{
+  id: 'p2',
+  category: 'Perros',
+  title: 'Peugeot',
+  price: 20000,
+  desc: 'Pan, cabano, pollo desmenuzado, carne desmenuzada, tocineta ahumada, piña en cuadritos y queso gratinado.',
+  ingredients: [
+    'Pan',
+    'Cabano',
+    'Pollo desmenuzado',
+    'Carne desmenuzada',
+    'Tocineta ahumada',
+    'Piña en cuadritos',
+    'Queso gratinado'
+  ],
+  image: 'images/perro-peugeot.png'
+},
+{
+  id: 'p3',
+  category: 'Perros',
+  title: 'Maserati',
+  price: 20000,
+  desc: 'Pan, chorizo, pollo desmenuzado, maíz, tocineta ahumada, piña en cuadritos, jamón, queso gratinado y salsa de queso cheddar.',
+  ingredients: [
+    'Pan',
+    'Chorizo',
+    'Pollo desmenuzado',
+    'Maíz',
+    'Tocineta ahumada',
+    'Piña en cuadritos',
+    'Jamón',
+    'Queso gratinado',
+    'Salsa de queso cheddar'
+  ],
+  image: 'images/perro-maserati.png'
+},
+{
+  id: 'p4',
+  category: 'Perros',
+  title: 'Honda',
+  price: 18000,
+  desc: 'Pan, salchicha tipo americana, pollo desmenuzado, tocineta ahumada, piña en cuadritos, jamón y queso gratinado.',
+  ingredients: [
+    'Pan',
+    'Salchicha tipo americana',
+    'Pollo desmenuzado',
+    'Tocineta ahumada',
+    'Piña en cuadritos',
+    'Jamón',
+    'Queso gratinado'
+  ],
+  image: 'images/perro-honda.png'
+},
+{
+  id: 'p5',
+  category: 'Perros',
+  title: 'McLaren',
+  price: 20000,
+  desc: 'Pan, salchicha tipo americana, carne desmenuzada, jalapeños, pepinillos, pico de gallo, tocineta ahumada, piña en cuadritos, jamón, queso gratinado y nachos.',
+  ingredients: [
+    'Pan',
+    'Salchicha tipo americana',
+    'Carne desmenuzada',
+    'Jalapeños',
+    'Pepinillos',
+    'Pico de gallo',
+    'Tocineta ahumada',
+    'Piña en cuadritos',
+    'Jamón',
+    'Queso gratinado',
+    'Nachos'
+  ],
+  image: 'images/perro-mclaren.png'
+},
+{
+  id: 'p6',
+  category: 'Perros',
+  title: 'Chevrolet',
+  price: 16000,
+  desc: 'Pan, salchicha tipo americana, pollo desmenuzado, piña en cuadritos y queso gratinado.',
+  ingredients: [
+    'Pan',
+    'Salchicha tipo americana',
+    'Pollo desmenuzado',
+    'Piña en cuadritos',
+    'Queso gratinado'
+  ],
+  image: 'images/perro-chevrolet.png'
+},
+{
+  id: 'p7',
+  category: 'Perros',
+  title: 'Perro Spark',
+  price: 15000,
+  desc: 'Pan, salchicha tipo americana, cebolla en cuadritos, lechuga, piña en cuadritos, salsa de tomate, mostaza, tártara, queso costeño y queso gratinado.',
+  ingredients: [
+    'Pan',
+    'Salchicha tipo americana',
+    'Cebolla en cuadritos',
+    'Lechuga',
+    'Piña en cuadritos',
+    'Salsa de tomate',
+    'Mostaza',
+    'Salsa tártara',
+    'Queso costeño',
+    'Queso gratinado'
+  ],
+  image: 'images/perro-spark.png'
+},
+{
+  id: 'p8',
+  category: 'Perros',
+  title: 'Perro Hilux',
+  price: 18000,
+  desc: 'Pan, salchicha tipo americana apanada, piña en cuadritos, tocineta ahumada crispy, queso costeño y queso gratinado.',
+  ingredients: [
+    'Pan',
+    'Salchicha tipo americana apanada',
+    'Piña en cuadritos',
+    'Tocineta ahumada crispy',
+    'Queso costeño',
+    'Queso gratinado'
+  ],
+  image: 'images/perro-hilux.png'
+}
+,
+
+//PICADAS CADILLAC
+{
+  id: 'pc1',
+  category: 'Picada Cadillac',
+  title: 'Picada X2',
+  price: 40000,
+  desc: 'Papa a la francesa, salchicha tipo americana, chorizo, costillas de cerdo, trocitos de carne, trocitos de pollo, pollo desmenuzado, cebolla grillé y queso costeño o fundido.',
+  ingredients: [
+    'Papa a la francesa',
+    'Salchicha tipo americana',
+    'Chorizo',
+    'Costillas de cerdo',
+    'Trocitos de carne',
+    'Trocitos de pollo',
+    'Pollo desmenuzado',
+    'Cebolla grillé',
+    'Queso costeño o fundido'
+  ],
+  image: 'images/picada-x2.png'
+},
+{
+  id: 'pc2',
+  category: 'Picada Cadillac',
+  title: 'Picada X3',
+  price: 60000,
+  desc: 'Papa a la francesa, salchicha tipo americana, chorizo, costillas de cerdo, trocitos de carne, trocitos de pollo, pollo desmenuzado, cebolla grillé y queso costeño o fundido.',
+  ingredients: [
+    'Papa a la francesa',
+    'Salchicha tipo americana',
+    'Chorizo',
+    'Costillas de cerdo',
+    'Trocitos de carne',
+    'Trocitos de pollo',
+    'Pollo desmenuzado',
+    'Cebolla grillé',
+    'Queso costeño o fundido'
+  ],
+  image: 'images/picada-x3.png'
+},
+{
+  id: 'pc3',
+  category: 'Picada Cadillac',
+  title: 'Picada X4',
+  price: 80000,
+  desc: 'Papa a la francesa, salchicha tipo americana, chorizo, costillas de cerdo, trocitos de carne, trocitos de pollo, pollo desmenuzado, cebolla grillé y queso costeño o fundido.',
+  ingredients: [
+    'Papa a la francesa',
+    'Salchicha tipo americana',
+    'Chorizo',
+    'Costillas de cerdo',
+    'Trocitos de carne',
+    'Trocitos de pollo',
+    'Pollo desmenuzado',
+    'Cebolla grillé',
+    'Queso costeño o fundido'
+  ],
+  image: 'images/picada-x4.png'
+}
+,
+
+//DESGRANADOS
+
+{
+  id: 'd1',
+  category: 'Desgranados',
+  title: "Mazorca Oscar's",
+  price: 21000,
+  desc: 'Maíz desgranado, pollo desmenuzado, trocitos de pollo, trocitos de carne, tocineta ahumada, bañada en salsa de la casa, queso rallado, acompañado con papas a la francesa.',
+  ingredients: [
+    'Maíz desgranado',
+    'Pollo desmenuzado',
+    'Trocitos de pollo',
+    'Trocitos de carne',
+    'Tocineta ahumada',
+    'Salsa de la casa',
+    'Queso rallado',
+    'Papas a la francesa'
+  ],
+  image: 'images/mazorca-oscars.png'
+},
+{
+  id: 'd2',
+  category: 'Desgranados',
+  title: 'Mazorca Kia',
+  price: 12000,
+  desc: 'Maíz desgranado, tocineta ahumada, bañada en salsa de la casa y queso rallado.',
+  ingredients: [
+    'Maíz desgranado',
+    'Tocineta ahumada',
+    'Salsa de la casa'
+  ],
+  image: 'images/mazorca-kia.png'
+}
+,
+
+//PAPITAS CROCANTES
+
+{
+  id: 'pcro1',
+  category: 'Papitas Crocantes',
+  title: "Papas Oscar's",
+  price: 26000,
+  desc: 'Papas a la francesa, trocitos de carne, trocitos de pollo, pollo desmenuzado, chorizo, tocineta ahumada, maíz salteado, queso gratinado y salsa de queso cheddar.',
+  ingredients: [
+    'Papas a la francesa',
+    'Trocitos de carne',
+    'Trocitos de pollo',
+    'Pollo desmenuzado',
+    'Chorizo',
+    'Tocineta ahumada',
+    'Maíz salteado',
+    'Queso gratinado',
+    'Salsa de queso cheddar'
+  ],
+  image: 'images/papas-oscars.png'
+},
+{
+  id: 'pcro2',
+  category: 'Papitas Crocantes',
+  title: 'Salchichoripollo Mitsubishi',
+  price: 21000,
+  desc: 'Papas a la francesa, chorizo, salchicha, pollo desmenuzado, cebolla grillé, bañada en salsa de la casa y queso rallado.',
+  ingredients: [
+    'Papas a la francesa',
+    'Chorizo',
+    'Salchicha',
+    'Pollo desmenuzado',
+    'Cebolla grillé',
+    'Salsa de la casa',
+    'Queso rallado'
+  ],
+  image: 'images/salchichoripollo-mitsubishi.png'
+},
+{
+  id: 'pcro3',
+  category: 'Papitas Crocantes',
+  title: 'Salchipapa Daewo',
+  price: 23000,
+  desc: 'Papas a la francesa, salchicha tipo americana, pollo desmenuzado, carne desmenuzada, tocineta ahumada, bañadas en salsa de la casa y queso rallado.',
+  ingredients: [
+    'Papas a la francesa',
+    'Salchicha tipo americana',
+    'Pollo desmenuzado',
+    'Carne desmenuzada',
+    'Tocineta ahumada',
+    'Salsa de la casa',
+    'Queso rallado'
+  ],
+  image: 'images/salchipapa-daewo.png'
+},
+{
+  id: 'pcro4',
+  category: 'Papitas Crocantes',
+  title: 'Papas Jeep',
+  price: 20000,
+  desc: 'Papas a la francesa, trocitos de carne, trocitos de pollo, tocineta ahumada, bañada en salsa de la casa y queso rallado.',
+  ingredients: [
+    'Papas a la francesa',
+    'Trocitos de carne',
+    'Trocitos de pollo',
+    'Tocineta ahumada',
+    'Salsa de la casa',
+    'Queso rallado'
+  ],
+  image: 'images/papas-jeep.png'
+},
+{
+  id: 'pcro5',
+  category: 'Papitas Crocantes',
+  title: 'Salchipapa BMW',
+  price: 19000,
+  desc: 'Papas a la francesa, salchicha tipo americana, pollo desmenuzado, vegetales (cebolla grillé, pepino, lechuga, tomate) bañados en salsa de la casa y queso rallado.',
+  ingredients: [
+    'Papas a la francesa',
+    'Salchicha tipo americana',
+    'Pollo desmenuzado',
+    'Cebolla grillé',
+    'Pepino',
+    'Lechuga',
+    'Tomate',
+    'Salsa de la casa',
+    'Queso rallado'
+  ],
+  image: 'images/salchipapa-bmw.png'
+},
+{
+  id: 'pcro6',
+  category: 'Papitas Crocantes',
+  title: 'Salchipapa Nissan',
+  price: 15000,
+  desc: 'Papas a la francesa, salchicha tipo americana, bañada en salsa de la casa y queso rallado.',
+  ingredients: [
+    'Papas a la francesa',
+    'Salchicha tipo americana',
+    'Salsa de la casa',
+    'Queso rallado'
+  ],
+  image: 'images/salchipapa-nissan.png'
+}
+,
+
+//SANDWICHES
+{
+  id: 's1',
+  category: 'Sandwiches',
+  title: "Oscar's",
+  price: 30000,
+  desc: 'Pan con especias, pollo desmenuzado, carne desmenuzada, carne en trocitos, pollo en trocitos, cabano picado, queso y vegetales (cebolla grillé, lechuga, tomate, pepino).',
+  ingredients: [
+    'Pan con especias',
+    'Pollo desmenuzado',
+    'Carne desmenuzada',
+    'Carne en trocitos',
+    'Pollo en trocitos',
+    'Cabano picado',
+    'Queso',
+    'Cebolla grillé',
+    'Lechuga',
+    'Tomate',
+    'Pepino'
+  ],
+  image: 'images/sandwich-oscars.png'
+},
+{
+  id: 's2',
+  category: 'Sandwiches',
+  title: 'Alfa Romeo',
+  price: 28000,
+  desc: 'Pan con especias, jamón de cordero, jamón pierna, tocineta ahumada, queso y vegetales (cebolla grillé, lechuga, tomate, pepino).',
+  ingredients: [
+    'Pan con especias',
+    'Jamón de cordero',
+    'Jamón pierna',
+    'Tocineta ahumada',
+    'Queso',
+    'Cebolla grillé',
+    'Lechuga',
+    'Tomate',
+    'Pepino'
+  ],
+  image: 'images/sandwich-alfa-romeo.png'
+},
+{
+  id: 's3',
+  category: 'Sandwiches',
+  title: 'Jaguar',
+  price: 28000,
+  desc: 'Pan con especias, pollo desmenuzado, pollo en trocitos, tocineta ahumada, jamón, queso y vegetales (cebolla grillé, lechuga, tomate, pepino).',
+  ingredients: [
+    'Pan con especias',
+    'Pollo desmenuzado',
+    'Pollo en trocitos',
+    'Tocineta ahumada',
+    'Jamón',
+    'Queso',
+    'Cebolla grillé',
+    'Lechuga',
+    'Tomate',
+    'Pepino'
+  ],
+  image: 'images/sandwich-jaguar.png'
+},
+{
+  id: 's4',
+  category: 'Sandwiches',
+  title: 'Hyundai',
+  price: 28000,
+  desc: 'Pan con especias, pollo desmenuzado, champiñones, jamón, queso, salsa de la casa y vegetales (cebolla grillé, lechuga, tomate, pepino).',
+  ingredients: [
+    'Pan con especias',
+    'Pollo desmenuzado',
+    'Champiñones',
+    'Jamón',
+    'Queso',
+    'Salsa de la casa',
+    'Cebolla grillé',
+    'Lechuga',
+    'Tomate',
+    'Pepino'
+  ],
+  image: 'images/sandwich-hyundai.png'
+}
+,
+
+//CREPES
+{
+  id: 'cr1',
+  category: 'Crepe',
+  title: "Oscar's",
+  price: 28000,
+  desc: 'Tortilla de trigo rellena de carne en trocitos, pollo en trocitos, carne desmenuzada, pollo desmenuzado, jamón, queso gratinado y vegetales (cebolla grillé, lechuga), acompañada con papas a la francesa.',
+  ingredients: [
+    'Tortilla de trigo',
+    'Carne en trocitos',
+    'Pollo en trocitos',
+    'Carne desmenuzada',
+    'Pollo desmenuzado',
+    'Jamón',
+    'Queso gratinado',
+    'Cebolla grillé',
+    'Lechuga',
+    'Papas a la francesa'
+  ],
+  image: 'images/crepe-oscars.png'
+},
+{
+  id: 'cr2',
+  category: 'Crepe',
+  title: 'Rolls Royce',
+  price: 21000,
+  desc: 'Tortilla de trigo rellena de carne desmenuzada, carne en cuadritos, pico de gallo, lechuga, piña en cuadritos, jamón y queso gratinado, acompañada con papas a la francesa.',
+  ingredients: [
+    'Tortilla de trigo',
+    'Carne desmenuzada',
+    'Carne en cuadritos',
+    'Pico de gallo',
+    'Lechuga',
+    'Piña en cuadritos',
+    'Jamón',
+    'Queso gratinado',
+    'Papas a la francesa'
+  ],
+  image: 'images/crepe-rolls-royce.png'
+},
+{
+  id: 'cr3',
+  category: 'Crepe',
+  title: 'Dacia',
+  price: 20000,
+  desc: 'Tortilla de trigo rellena de pollo desmenuzado, pollo en trocitos, jamón, queso gratinado y vegetales (cebolla grillé, lechuga), acompañada con papas a la francesa.',
+  ingredients: [
+    'Tortilla de trigo',
+    'Pollo desmenuzado',
+    'Pollo en trocitos',
+    'Jamón',
+    'Queso gratinado',
+    'Cebolla grillé',
+    'Lechuga',
+    'Papas a la francesa'
+  ],
+  image: 'images/crepe-dacia.png'
+}
+,
+
+//PATACONES
+{
+  id: 'pt1',
+  category: 'Patacones',
+  title: "Patacon Oscar's",
+  price: 26000,
+  desc: 'Carne en trocitos, pollo en trocitos, pollo desmenuzado, carne desmenuzada, tocineta ahumada, suero y queso costeño.',
+  ingredients: [
+    'Carne en trocitos',
+    'Pollo en trocitos',
+    'Pollo desmenuzado',
+    'Carne desmenuzada',
+    'Tocineta ahumada',
+    'Suero',
+    'Queso costeño'
+  ],
+  image: 'images/patacon-oscars.png'
+},
+{
+  id: 'pt2',
+  category: 'Patacones',
+  title: 'Patacon Bentley',
+  price: 19000,
+  desc: 'Pollo desmenuzado, pollo en cuadritos, tocineta, suero y queso costeño.',
+  ingredients: [
+    'Pollo desmenuzado',
+    'Pollo en cuadritos',
+    'Tocineta',
+    'Suero',
+    'Queso costeño'
+  ],
+  image: 'images/patacon-bentley.png'
+},
+{
+  id: 'pt3',
+  category: 'Patacones',
+  title: 'Patacon Skoda',
+  price: 19000,
+  desc: 'Carne en trocitos, carne desmenuzada, pico de gallo, piña en cuadritos y queso gratinado.',
+  ingredients: [
+    'Carne en trocitos',
+    'Carne desmenuzada',
+    'Pico de gallo',
+    'Piña en cuadritos',
+    'Queso gratinado'
+  ],
+  image: 'images/patacon-skoda.png'
+}
+,
+
+//ALITAS DE POLLO
+{
+  id: 'ap1',
+  category: 'Alitas de Pollo',
+  title: 'Alitas de Pollo X6',
+  price: 28000,
+  desc: 'Alitas de pollo bañadas en nuestras ricas salsas (BBQ, Miel Mostaza, Picante de Búfalo) y papas a la francesa.',
+  ingredients: [
+    'Alitas de pollo',
+    'Salsa BBQ',
+    'Salsa Miel Mostaza',
+    'Salsa Picante de Búfalo',
+    'Papas a la francesa'
+  ],
+  image: 'images/alitas-x6.png',
+  sizes: [
+    {
+      id: 'ap1-apanadas',
+      label: 'Apanadas',
+      price: 0,
+      image: 'images/alitas-x6.png'
+    },
+    {
+      id: 'ap1-asadas',
+      label: 'Asadas al carbón',
+      price: 0,
+      image: 'images/alitas-x6.png'
+    }
+  ]
+},
+{
+  id: 'ap2',
+  category: 'Alitas de Pollo',
+  title: 'Alitas de Pollo X12',
+  price: 56000,
+  desc: 'Alitas de pollo bañadas en nuestras ricas salsas (BBQ, Miel Mostaza, Picante de Búfalo) y papas a la francesa.',
+  ingredients: [
+    'Alitas de pollo',
+    'Salsa BBQ',
+    'Salsa Miel Mostaza',
+    'Salsa Picante de Búfalo',
+    'Papas a la francesa'
+  ],
+  image: 'images/alitas-x12.png',
+  sizes: [
+    {
+      id: 'ap2-apanadas',
+      label: 'Apanadas',
+      price: 0,
+      image: 'images/alitas-x12.png'
+    },
+    {
+      id: 'ap2-asadas',
+      label: 'Asadas al carbón',
+      price: 0,
+      image: 'images/alitas-x12.png'
+    }
+  ]
+}
+,
+
+//CORTES DE CARNE
+{
+  id: 'co1',
+  category: 'Cortes',
+  title: 'Tomahawk Continental GT',
+  price: 50000,
+  desc: 'Carne de res a la parrilla acompañado de ensalada (tomate, cebolla, lechuga crespa, pepino) y papa criolla o francesa.',
+  ingredients: [
+    'Carne de res a la parrilla',
+    'Tomate',
+    'Cebolla',
+    'Lechuga crespa',
+    'Pepino',
+    'Papa criolla o francesa'
+  ],
+  image: 'images/tomahawk-continental.png'
+},
+{
+  id: 'co2',
+  category: 'Cortes',
+  title: 'Churrasco Porsche',
+  price: 40000,
+  desc: '250gr de carne de res a la parrilla, ensalada (tomate, cebolla, lechuga crespa, pepino), papas a la francesa o papa criolla.',
+  ingredients: [
+    'Carne de res 250gr a la parrilla',
+    'Tomate',
+    'Cebolla',
+    'Lechuga crespa',
+    'Pepino',
+    'Papas a la francesa o papa criolla'
+  ],
+  image: 'images/churrasco-porsche.png'
+},
+{
+  id: 'co3',
+  category: 'Cortes',
+  title: 'Punta de Anca Lamborghini',
+  price: 40000,
+  desc: '250gr de carne de res a la parrilla, ensalada (tomate, cebolla, lechuga crespa, pepino), papas a la francesa o papa criolla.',
+  ingredients: [
+    'Carne de res 250gr a la parrilla',
+    'Tomate',
+    'Cebolla',
+    'Lechuga crespa',
+    'Pepino',
+    'Papas a la francesa o papa criolla'
+  ],
+  image: 'images/punta-anca-lamborghini.png'
+},
+{
+  id: 'co4',
+  category: 'Cortes',
+  title: 'Pechuga Land Rover',
+  price: 35000,
+  desc: '250gr de pechuga a la parrilla, ensalada (tomate, cebolla, lechuga crespa, pepino), papas a la francesa o papa criolla.',
+  ingredients: [
+    'Pechuga 250gr a la parrilla',
+    'Tomate',
+    'Cebolla',
+    'Lechuga crespa',
+    'Pepino',
+    'Papas a la francesa o papa criolla'
+  ],
+  image: 'images/pechuga-land-rover.png'
+},
+{
+  id: 'co5',
+  category: 'Cortes',
+  title: 'Pechuga California',
+  price: 40000,
+  desc: '250gr de pechuga a la parrilla, piña en cuadritos, jamón, queso gratinado, ensalada (tomate, cebolla, lechuga crespa, pepino) y papa criolla o francesa.',
+  ingredients: [
+    'Pechuga 250gr a la parrilla',
+    'Piña en cuadritos',
+    'Jamón',
+    'Queso gratinado',
+    'Tomate',
+    'Cebolla',
+    'Lechuga crespa',
+    'Pepino',
+    'Papa criolla o francesa'
+  ],
+  image: 'images/pechuga-california.png'
+},
+{
+  id: 'co6',
+  category: 'Cortes',
+  title: 'Costillas de Cerdo Aston Martin',
+  price: 35000,
+  desc: '200gr de costilla de cerdo, ensalada (tomate, cebolla, lechuga crespa, pepino), papas a la francesa o papa criolla.',
+  ingredients: [
+    'Costilla de cerdo 200gr',
+    'Tomate',
+    'Cebolla',
+    'Lechuga crespa',
+    'Pepino',
+    'Papas a la francesa o papa criolla'
+  ],
+  image: 'images/costillas-aston-martin.png'
+}
+,
+
+//PINCHOS
+{
+  id: 'pi1',
+  category: 'Pinchos',
+  title: 'Audi',
+  price: 23000,
+  desc: '200gr de pollo a la parrilla, acompañado de ensalada y papa criolla o francesa.',
+  ingredients: [
+    'Pollo 200gr a la parrilla',
+    'Ensalada',
+    'Papa criolla o francesa'
+  ],
+  image: 'images/pincho-audi.png'
+},
+{
+  id: 'pi2',
+  category: 'Pinchos',
+  title: 'Bugatti',
+  price: 23000,
+  desc: '200gr de carne a la parrilla, acompañado de ensalada y papa criolla o francesa.',
+  ingredients: [
+    'Carne 200gr a la parrilla',
+    'Ensalada',
+    'Papa criolla o francesa'
+  ],
+  image: 'images/pincho-bugatti.png'
+},
+{
+  id: 'pi3',
+  category: 'Pinchos',
+  title: 'Citroën',
+  price: 25000,
+  desc: '200gr de pollo y carne a la parrilla, acompañado de ensalada y papa criolla o francesa.',
+  ingredients: [
+    'Pollo 200gr a la parrilla',
+    'Carne 200gr a la parrilla',
+    'Ensalada',
+    'Papa criolla o francesa'
+  ],
+  image: 'images/pincho-citroen.png'
+}
+,
+
+//ENSALADAS
+{
+  id: 'oscars',
+  category: 'Ensaladas',
+  title: "Oscar's",
+  price: 18000,
+  desc: 'Pollo desmenuzado, lechuga batavia, mezclado con trocitos de jamón, queso y piña.',
+  ingredients: ['Pollo desmenuzado', 'Lechuga batavia', 'Jamón', 'Queso', 'Piña'],
+  extras: [
+    { name: 'Queso adicional', price: 3000 },
+    { name: 'Pollo adicional', price: 2000 }
+  ],
+  image: 'images/ensalada-oscars.png'
+},
+{
+  id: 'volvo',
+  category: 'Ensaladas',
+  title: 'Volvo',
+  price: 18000,
+  desc: 'Jugosos cortes de pollo, lechuga crespa, lechuga batavia, crotones, trocitos de queso bañados en vinagreta de salsa miel mostaza.',
+  ingredients: ['Pollo', 'Lechuga crespa', 'Lechuga batavia', 'Crotones', 'Queso', 'Vinagreta de miel mostaza'],
+  extras: [
+    { name: 'Queso adicional', price: 3000 },
+    { name: 'Crotones extra', price: 2000 }
+  ],
+  image: 'images/ensalada-volvo.png'
+},
+{
+  id: 'grand-vitara',
+  category: 'Ensaladas',
+  title: 'Grand Vitara',
+  price: 18000,
+  desc: 'Pollo desmenuzado, lechuga crespa, lechuga batavia, tomate rojo, crotones y queso rallado bañados en vinagreta miel mostaza.',
+  ingredients: ['Pollo desmenuzado', 'Lechuga crespa', 'Lechuga batavia', 'Tomate rojo', 'Crotones', 'Queso rallado', 'Vinagreta miel mostaza'],
+  extras: [
+    { name: 'Queso adicional', price: 3000 },
+    { name: 'Pollo adicional', price: 2000 }
+  ],
+  image: 'images/ensalada-grand-vitara.png'
+}
+,
+
+ // ===== MENU INFANTIL =====
    {
   id: 'inf1',
   category: 'Menú Infantil',
@@ -252,301 +1455,445 @@ const products = [
 }
 ,
 
-//ANTOJITOS
+//CERVEZA
 {
-  id: 'mazorca-mustang',
-  category: 'Antojitos',
-  title: 'Mazorca Mustang',
-  price: 13000,
-  desc: 'Mazorca en tusa asada a la parrilla bañada en salsa de la casa y queso rallado.',
-  ingredients: ['Mazorca asada', 'Salsa de la casa', 'Queso rallado'],
-  extras: [
-    { name: 'Queso adicional', price: 3000 },
-    { name: 'Tocineta adicional', price: 2000 }
-  ],
-  image: 'images/mazorca-mustang.png'
+  id: 'licor1',
+  category: 'Licor',
+  title: 'Cerveza - Original',
+  price: 4500,
+  desc: 'Cerveza nacional clásica con sabor equilibrado y refrescante.',
+  image: 'images/cerveza-original.png'
 },
 {
-  id: 'aros-cebolla-apanado',
-  category: 'Antojitos',
-  title: 'Aros de Cebolla Apanado',
-  price: 15000,
-  desc: '5 aros de cebolla apanados.',
-  ingredients: ['Cebolla', 'Apanado'],
-  extras: [
-    { name: 'Porción adicional de aros', price: 3000 },
-    { name: 'Salsa extra', price: 2000 }
-  ],
-  image: 'images/aros-cebolla-apanado.png'
+  id: 'licor2',
+  category: 'Licor',
+  title: 'Cerveza - Light',
+  price: 4500,
+  desc: 'Cerveza suave y ligera, ideal para disfrutar en cualquier momento.',
+  image: 'images/cerveza-light.png'
 },
 {
-  id: 'papas-tesla',
-  category: 'Antojitos',
-  title: 'Papas Tesla',
-  price: 15000,
-  desc: 'Papas a la francesa y chorizo bañadas en salsa de la casa y queso rallado.',
-  ingredients: ['Papas a la francesa', 'Chorizo', 'Salsa de la casa', 'Queso rallado'],
-  extras: [
-    { name: 'Queso adicional', price: 3000 },
-    { name: 'Chorizo adicional', price: 2000 }
-  ],
-  image: 'images/papas-tesla.png'
+  id: 'licor3',
+  category: 'Licor',
+  title: 'Cerveza - Pilsen',
+  price: 4500,
+  desc: 'Cerveza tipo lager con un perfil fresco y balanceado.',
+  image: 'images/cerveza-pilsen.png'
 },
 {
-  id: 'patacones-civic',
-  category: 'Antojitos',
-  title: 'Patacones Civic',
-  price: 10000,
-  desc: 'Tres patacones en moneda: uno con queso costeño, otro con suero y otro con salsa de ceviche.',
-  ingredients: ['Patacones', 'Queso costeño', 'Suero', 'Salsa de ceviche'],
-  extras: [
-    { name: 'Porción adicional de patacones', price: 3000 },
-    { name: 'Salsa extra', price: 2000 }
-  ],
-  image: 'images/patacones-civic.png'
+  id: 'licor4',
+  category: 'Licor',
+  title: 'Cerveza - Póker',
+  price: 4500,
+  desc: 'Cerveza de tradición con cuerpo medio y gran sabor.',
+  image: 'images/cerveza-poker.png'
 },
 {
-  id: 'papas-fiat',
-  category: 'Antojitos',
-  title: 'Papas Fiat',
-  price: 13000,
-  desc: 'Papas a la francesa, tocineta ahumada, piña en cuadros, queso rallado y salsa de la casa.',
-  ingredients: ['Papas a la francesa', 'Tocineta ahumada', 'Piña', 'Queso rallado', 'Salsa de la casa'],
-  extras: [
-    { name: 'Queso adicional', price: 3000 },
-    { name: 'Tocineta adicional', price: 2000 }
-  ],
-  image: 'images/papas-fiat.png'
+  id: 'licor5',
+  category: 'Licor',
+  title: 'Cerveza - Andina',
+  price: 4500,
+  desc: 'Cerveza nacional de sabor suave y refrescante.',
+  image: 'images/cerveza-andina.png'
 },
 {
-  id: 'enchula-tus-papas',
-  category: 'Antojitos',
-  title: 'Enchula tus Papas',
+  id: 'licor6',
+  category: 'Licor',
+  title: 'Club Colombia Dorada',
   price: 5000,
-  desc: 'Papas bañadas en queso rallado, tocineta ahumada y salsa de la casa.',
-  ingredients: ['Papas', 'Queso rallado', 'Tocineta ahumada', 'Salsa de la casa'],
-  extras: [
-    { name: 'Queso adicional', price: 3000 },
-    { name: 'Tocineta adicional', price: 2000 }
-  ],
-  image: 'images/enchula-tus-papas.png'
+  desc: 'Cerveza refrescante nacional con un sabor premium y balanceado.',
+  image: 'images/club-colombia.png'
+},
+{
+  id: 'licor7',
+  category: 'Licor',
+  title: 'Coronita',
+  price: 6500,
+  desc: 'Cerveza internacional de sabor ligero y refrescante.',
+  image: 'images/coronita.png'
+},
+{
+  id: 'licor8',
+  category: 'Licor',
+  title: 'Heineken',
+  price: 6500,
+  desc: 'Cerveza premium internacional con un sabor distintivo.',
+  image: 'images/heineken.png'
+},
+{
+  id: 'licor9',
+  category: 'Licor',
+  title: 'Budweiser',
+  price: 6500,
+  desc: 'Cerveza internacional suave con cuerpo equilibrado.',
+  image: 'images/budweiser.png'
 }
 ,
 
-//ENSALADAS
+//GRANIZADOS
 {
-  id: 'oscars',
-  category: 'Ensaladas',
-  title: "Oscar's",
-  price: 18000,
-  desc: 'Pollo desmenuzado, lechuga batavia, mezclado con trocitos de jamón, queso y piña.',
-  ingredients: ['Pollo desmenuzado', 'Lechuga batavia', 'Jamón', 'Queso', 'Piña'],
-  extras: [
-    { name: 'Queso adicional', price: 3000 },
-    { name: 'Pollo adicional', price: 2000 }
-  ],
-  image: 'images/ensalada-oscars.png'
-},
-{
-  id: 'volvo',
-  category: 'Ensaladas',
-  title: 'Volvo',
-  price: 18000,
-  desc: 'Jugosos cortes de pollo, lechuga crespa, lechuga batavia, crotones, trocitos de queso bañados en vinagreta de salsa miel mostaza.',
-  ingredients: ['Pollo', 'Lechuga crespa', 'Lechuga batavia', 'Crotones', 'Queso', 'Vinagreta de miel mostaza'],
-  extras: [
-    { name: 'Queso adicional', price: 3000 },
-    { name: 'Crotones extra', price: 2000 }
-  ],
-  image: 'images/ensalada-volvo.png'
-},
-{
-  id: 'grand-vitara',
-  category: 'Ensaladas',
-  title: 'Grand Vitara',
-  price: 18000,
-  desc: 'Pollo desmenuzado, lechuga crespa, lechuga batavia, tomate rojo, crotones y queso rallado bañados en vinagreta miel mostaza.',
-  ingredients: ['Pollo desmenuzado', 'Lechuga crespa', 'Lechuga batavia', 'Tomate rojo', 'Crotones', 'Queso rallado', 'Vinagreta miel mostaza'],
-  extras: [
-    { name: 'Queso adicional', price: 3000 },
-    { name: 'Pollo adicional', price: 2000 }
-  ],
-  image: 'images/ensalada-grand-vitara.png'
-}
-,
-
-
-
-
-// Bebidas
-{
-    id: 'bebida1',
-    category: 'Bebidas',
-    title: 'Gaseosa 1.5L - CocaCola',
-    price: 8000,
-    desc: 'Gaseosa Coca-Cola de 1.5 litros.',
-    image: 'images/gaseosa-coca.png'
-  },
-  {
-    id: 'bebida2',
-    category: 'Bebidas',
-    title: 'Gaseosa 1.5L - Postobón',
-    price: 7000,
-    desc: 'Gaseosa Postobón de 1.5 litros.',
-    image: 'images/gaseosa-postobon.png'
-  },
-  {
-    id: 'bebida3',
-    category: 'Bebidas',
-    title: 'Gaseosa PET 400ml - Postobón',
-    price: 4000,
-    desc: 'Gaseosa Postobón en presentación PET de 400ml.',
-    image: 'images/gaseosa-pet-postobon.png'
-  },
-  {
-    id: 'bebida4',
-    category: 'Bebidas',
-    title: 'Gaseosa PET 400ml - Coca-Cola',
-    price: 4000,
-    desc: 'Gaseosa Coca-Cola en presentación PET de 400ml.',
-    image: 'images/gaseosa-pet-coca.png'
-  },
-  {
-    id: 'bebida5',
-    category: 'Bebidas',
-    title: 'Gaseosa Familiar',
-    price: 12000,
-    desc: 'Gaseosa en presentación familiar para compartir.',
-    image: 'images/gaseosa-familiar.png'
-  },
-  {
-    id: 'bebida6',
-    category: 'Bebidas',
-    title: 'Jugo Hit 1.5L',
-    price: 7000,
-    desc: 'Jugo Hit de 1.5 litros.',
-    image: 'images/jugo-hit-1.5.png'
-  },
-  {
-    id: 'bebida7',
-    category: 'Bebidas',
-    title: 'Jugo PET 600ml',
-    price: 4000,
-    desc: 'Jugo en presentación PET de 600ml.',
-    image: 'images/jugo-pet-600.png'
-  },
-  {
-    id: 'bebida8',
-    category: 'Bebidas',
-    title: 'Agua',
-    price: 3000,
-    desc: 'Agua pura natural sin gas.',
-    image: 'images/agua.png'
-  },
-  {
-    id: 'bebida9',
-    category: 'Bebidas',
-    title: 'Agua con gas',
-    price: 3000,
-    desc: 'Agua mineral con gas.',
-    image: 'images/agua-gas.png'
-  },
-//JUGOS NATURALES 
-  {
-  id: 'j1',
-  category: 'Jugos',
-  title: 'Jugo de Mora',
-  price: 6000,
-  desc: 'Jugo natural de mora. Puedes elegir entre agua o leche.',
-  ingredients: ['Mora', 'Azúcar', 'Hielo'],
-  image: 'images/jugo-mora.png',
-  sizes: [
-    {
-      id: 'j1-agua',
-      label: 'En agua',
-      price: 6000,
-      image: 'images/jugo-mora.png'
-    },
-    {
-      id: 'j1-leche',
-      label: 'En leche',
-      price: 7000,
-      image: 'images/jugo-mora.png'
-    }
-  ]
-},
-{
-  id: 'j2',
-  category: 'Jugos',
-  title: 'Jugo de Fresa',
-  price: 6000,
-  desc: 'Jugo natural de fresa. Puedes elegir entre agua o leche.',
+  id: 'g1',
+  category: 'Granizados',
+  title: 'Granizado de Fresa',
+  price: 7000,
+  desc: 'Granizado natural de fresa. Puedes elegir entre agua o leche.',
   ingredients: ['Fresa', 'Azúcar', 'Hielo'],
-  image: 'images/jugo-fresa.png',
+  image: 'images/granizado-fresa.png',
   sizes: [
     {
-      id: 'j2-agua',
+      id: 'g1-agua',
       label: 'En agua',
-      price: 6000,
-      image: 'images/jugo-fresa.png'
+      price: 7000,
+      image: 'images/granizado-fresa.png'
     },
     {
-      id: 'j2-leche',
+      id: 'g1-leche',
       label: 'En leche',
-      price: 7000,
-      image: 'images/jugo-fresa.png'
+      price: 8000,
+      image: 'images/granizado-fresa.png'
     }
   ]
 },
 {
-  id: 'j3',
-  category: 'Jugos',
-  title: 'Jugo de Maracuyá',
-  price: 6000,
-  desc: 'Jugo natural de maracuyá. Puedes elegir entre agua o leche.',
-  ingredients: ['Maracuyá', 'Azúcar', 'Hielo'],
-  image: 'images/jugo-maracuya.png',
+  id: 'g2',
+  category: 'Granizados',
+  title: 'Granizado de Limón',
+  price: 7000,
+  desc: 'Granizado natural de limón. Puedes elegir entre agua o leche.',
+  ingredients: ['Limón', 'Azúcar', 'Hielo'],
+  image: 'images/granizado-limon.png',
   sizes: [
     {
-      id: 'j3-agua',
+      id: 'g2-agua',
       label: 'En agua',
-      price: 6000,
-      image: 'images/jugo-maracuya.png'
+      price: 7000,
+      image: 'images/granizado-limon.png'
     },
     {
-      id: 'j3-leche',
+      id: 'g2-leche',
       label: 'En leche',
-      price: 7000,
-      image: 'images/jugo-maracuya.png'
+      price: 8000,
+      image: 'images/granizado-limon.png'
     }
   ]
-}
-,
+},
+{
+  id: 'g3',
+  category: 'Granizados',
+  title: 'Granizado de Mandarina',
+  price: 7000,
+  desc: 'Granizado natural de mandarina. Puedes elegir entre agua o leche.',
+  ingredients: ['Mandarina', 'Azúcar', 'Hielo'],
+  image: 'images/granizado-mandarina.png',
+  sizes: [
+    {
+      id: 'g3-agua',
+      label: 'En agua',
+      price: 7000,
+      image: 'images/granizado-mandarina.png'
+    },
+    {
+      id: 'g3-leche',
+      label: 'En leche',
+      price: 8000,
+      image: 'images/granizado-mandarina.png'
+    }
+  ]
+},
+{
+  id: 'g4',
+  category: 'Granizados',
+  title: 'Granizado de Naranja',
+  price: 7000,
+  desc: 'Granizado natural de naranja. Puedes elegir entre agua o leche.',
+  ingredients: ['Naranja', 'Azúcar', 'Hielo'],
+  image: 'images/granizado-naranja.png',
+  sizes: [
+    {
+      id: 'g4-agua',
+      label: 'En agua',
+      price: 7000,
+      image: 'images/granizado-naranja.png'
+    },
+    {
+      id: 'g4-leche',
+      label: 'En leche',
+      price: 8000,
+      image: 'images/granizado-naranja.png'
+    }
+  ]
+},
+{
+  id: 'g5',
+  category: 'Granizados',
+  title: 'Granizado de Lulo',
+  price: 7000,
+  desc: 'Granizado natural de lulo. Puedes elegir entre agua o leche.',
+  ingredients: ['Lulo', 'Azúcar', 'Hielo'],
+  image: 'images/granizado-lulo.png',
+  sizes: [
+    {
+      id: 'g5-agua',
+      label: 'En agua',
+      price: 7000,
+      image: 'images/granizado-lulo.png'
+    },
+    {
+      id: 'g5-leche',
+      label: 'En leche',
+      price: 8000,
+      image: 'images/granizado-lulo.png'
+    }
+  ]
+},
+{
+  id: 'g6',
+  category: 'Granizados',
+  title: 'Granizado de Maracuyá',
+  price: 7000,
+  desc: 'Granizado natural de maracuyá. Puedes elegir entre agua o leche.',
+  ingredients: ['Maracuyá', 'Azúcar', 'Hielo'],
+  image: 'images/granizado-maracuya.png',
+  sizes: [
+    {
+      id: 'g6-agua',
+      label: 'En agua',
+      price: 7000,
+      image: 'images/granizado-maracuya.png'
+    },
+    {
+      id: 'g6-leche',
+      label: 'En leche',
+      price: 8000,
+      image: 'images/granizado-maracuya.png'
+    }
+  ]
+},
+{
+  id: 'g7',
+  category: 'Granizados',
+  title: 'Granizado de Mango',
+  price: 7000,
+  desc: 'Granizado natural de mango. Puedes elegir entre agua o leche.',
+  ingredients: ['Mango', 'Azúcar', 'Hielo'],
+  image: 'images/granizado-mango.png',
+  sizes: [
+    {
+      id: 'g7-agua',
+      label: 'En agua',
+      price: 7000,
+      image: 'images/granizado-mango.png'
+    },
+    {
+      id: 'g7-leche',
+      label: 'En leche',
+      price: 8000,
+      image: 'images/granizado-mango.png'
+    }
+  ]
+},
+{
+  id: 'g8',
+  category: 'Granizados',
+  title: 'Granizado de Uva',
+  price: 7000,
+  desc: 'Granizado natural de uva. Puedes elegir entre agua o leche.',
+  ingredients: ['Uva', 'Azúcar', 'Hielo'],
+  image: 'images/granizado-uva.png',
+  sizes: [
+    {
+      id: 'g8-agua',
+      label: 'En agua',
+      price: 7000,
+      image: 'images/granizado-uva.png'
+    },
+    {
+      id: 'g8-leche',
+      label: 'En leche',
+      price: 8000,
+      image: 'images/granizado-uva.png'
+    }
+  ]
+},
+{
+  id: 'g9',
+  category: 'Granizados',
+  title: 'Granizado de Guanábana',
+  price: 7000,
+  desc: 'Granizado natural de guanábana. Puedes elegir entre agua o leche.',
+  ingredients: ['Guanábana', 'Azúcar', 'Hielo'],
+  image: 'images/granizado-guanabana.png',
+  sizes: [
+    {
+      id: 'g9-agua',
+      label: 'En agua',
+      price: 7000,
+      image: 'images/granizado-guanabana.png'
+    },
+    {
+      id: 'g9-leche',
+      label: 'En leche',
+      price: 8000,
+      image: 'images/granizado-guanabana.png'
+    }
+  ]
+},
+{
+  id: 'g10',
+  category: 'Granizados',
+  title: 'Granizado de Mora',
+  price: 7000,
+  desc: 'Granizado natural de mora. Puedes elegir entre agua o leche.',
+  ingredients: ['Mora', 'Azúcar', 'Hielo'],
+  image: 'images/granizado-mora.png',
+  sizes: [
+    {
+      id: 'g10-agua',
+      label: 'En agua',
+      price: 7000,
+      image: 'images/granizado-mora.png'
+    },
+    {
+      id: 'g10-leche',
+      label: 'En leche',
+      price: 8000,
+      image: 'images/granizado-mora.png'
+    }
+  ]
+},
+
+{
+  id: 'g11',
+  category: 'Granizados',
+  title: 'Granizado de Frutos Rojos',
+  price: 7500,
+  desc: 'Granizado refrescante de frutos rojos.',
+  ingredients: ['Frutos Rojos', 'Azúcar', 'Hielo'],
+  image: 'images/granizado-frutos-rojos.png'
+},
+{
+  id: 'g12',
+  category: 'Granizados',
+  title: 'Granizado de Frutos Amarillos',
+  price: 7500,
+  desc: 'Granizado refrescante de frutos amarillos.',
+  ingredients: ['Frutos Amarillos', 'Azúcar', 'Hielo'],
+  image: 'images/granizado-frutos-amarillos.png'
+},
+
+
+
+
+// Bebidas // GASEOSAS
+{
+  id: 'bebida1',
+  category: 'Gaseosas',
+  title: 'Gaseosa 350ml',
+  price: 4000,
+  desc: 'Gaseosa en presentación de 350ml.',
+  image: 'images/gaseosa-pet-coca.png'
+},
+{
+  id: 'bebida2',
+  category: 'Gaseosas',
+  title: 'Gaseosa PET 400ml',
+  price: 5000,
+  desc: 'Gaseosa en presentación PET de 400ml.',
+  image: 'images/gaseosa-pet-postobon.png'
+},
+{
+  id: 'bebida3',
+  category: 'Gaseosas',
+  title: 'Gaseosa 1.5L',
+  price: 10000,
+  desc: 'Gaseosa en presentación de 1.5 litros.',
+  image: 'images/gaseosa-coca.png'
+},
+{
+  id: 'bebida4',
+  category: 'Gaseosas',
+  title: 'Botella de Agua',
+  price: 3500,
+  desc: 'Botella de agua pura natural.',
+  image: 'images/agua.png'
+},
+{
+  id: 'bebida5',
+  category: 'Gaseosas',
+  title: 'Michelada de Cereza',
+  price: 5000,
+  desc: 'Bebida michelada con sabor a cereza.',
+  image: 'images/michelada-cereza.png'
+},
+{
+  id: 'bebida6',
+  category: 'Gaseosas',
+  title: 'Soda Michelada',
+  price: 5000,
+  desc: 'Refrescante soda preparada tipo michelada.',
+  image: 'images/soda-michelada.png'
+},
+
+
+
+ 
   //LIMONADAS REFRESCANTES
     {
-    id: 'limonada1',
-    category: 'Limonadas',
-    title: 'Limonada Clásica',
-    price: 8000,
-    desc: 'Limonada fresca natural.',
-    image: 'images/limonada.png'
-  },
-  {
-    id: 'limonada2',
-    category: 'Limonadas',
-    title: 'Cerezada',
-    price: 8000,
-    desc: 'Limonada natural con un toque de cereza.',
-    image: 'images/cerezada.png'
-  },
-  {
-    id: 'limonada3',
-    category: 'Limonadas',
-    title: 'Limonada Simple',
-    price: 7000,
-    desc: 'Limonada refrescante, opción económica.',
-    image: 'images/limonada-simple.png'
-  }
+  id: 'limonada1',
+  category: 'Limonadas',
+  title: 'Limonada en Soda',
+  price: 8500,
+  desc: 'Limonada refrescante preparada en soda.',
+  image: 'images/limonada-soda.png'
+},
+{
+  id: 'limonada2',
+  category: 'Limonadas',
+  title: 'Limonada de Pepino',
+  price: 8500,
+  desc: 'Limonada natural con sabor a pepino.',
+  image: 'images/limonada-pepino.png'
+},
+{
+  id: 'limonada3',
+  category: 'Limonadas',
+  title: 'Limonada de Hierba Buena',
+  price: 8500,
+  desc: 'Limonada natural con hierba buena.',
+  image: 'images/limonada-hierbabuena.png'
+},
+{
+  id: 'limonada4',
+  category: 'Limonadas',
+  title: 'Limonada de Uva',
+  price: 8500,
+  desc: 'Limonada natural con sabor a uva.',
+  image: 'images/limonada-uva.png'
+},
+{
+  id: 'limonada5',
+  category: 'Limonadas',
+  title: 'Limonada de Mango',
+  price: 8500,
+  desc: 'Limonada natural con sabor a mango.',
+  image: 'images/limonada-mango.png'
+},
+{
+  id: 'limonada6',
+  category: 'Limonadas',
+  title: 'Limonada de Cereza',
+  price: 11000,
+  desc: 'Limonada natural con sabor a cereza.',
+  image: 'images/limonada-cereza.png'
+},
+{
+  id: 'limonada7',
+  category: 'Limonadas',
+  title: 'Limonada de Coco',
+  price: 11000,
+  desc: 'Limonada natural con sabor a coco.',
+  image: 'images/limonada-coco.png'
+}
 ];
 
 const categories = [...new Set(products.map(p=>p.category))];
