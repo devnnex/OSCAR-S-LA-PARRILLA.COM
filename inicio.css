@@ -911,6 +911,13 @@ body {
   transform:scale(1.05);
 }
 
+.menu-toggle i{
+  font-size:20px;
+  color:#fff;
+  transition:.3s ease;
+}
+
+
 .menu-toggle.active i::before{
   content:"\f00d"; /* icono X */
 }
