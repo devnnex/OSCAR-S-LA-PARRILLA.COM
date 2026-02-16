@@ -309,7 +309,7 @@ body {
 
 .hero-btn:hover {
   background: var(--white);
-  color: var(--blue);
+  color: #d5582b;
 }
 
 .btnBoxLove{
@@ -366,6 +366,11 @@ body {
   padding: 35px;
   border-radius: 22px;
   box-shadow: 0 12px 28px var(--shadow);
+
+    /* 👇 AGREGA ESTO */
+  justify-content:center;
+  align-items:center;
+  text-align:center;
 }
 
 .top-product-img {
@@ -393,7 +398,7 @@ body {
    CTA PEDIDO AHORA
 ==================================================================================== */
 .pedido-section {
-  padding: 90px 20px;
+  padding: 90px 30px;
   text-align: center;
   background: #e17c2d;
   color: var(--white);
@@ -528,7 +533,7 @@ body {
    GALERÍA – GRID (DESKTOP)
 ==================================================================================== */
 .galeria {
-  padding: 90px 20px;
+  padding: 90px 30px;
 }
 
 .galeria-grid {
@@ -588,7 +593,7 @@ body {
    WHY US
 ==================================================================================== */
 .why-us {
-  padding: 100px 20px;
+  padding: 100px 30px;
   background: #db6923;
   color: var(--white);
   text-align: center;
@@ -618,7 +623,7 @@ body {
    UBICACIÓN + MAPA
 ==================================================================================== */
 .ubicacion {
-  padding: 90px 20px;
+  padding: 90px 30px;
   text-align: center;
 }
 
@@ -671,7 +676,7 @@ body {
   background: #de6b2a; /* Negro elegante */
   color: #ddd;
   width: 100%; /* 🔥 Ocupa todo el ancho */
-  padding: 50px 20px 20px;
+  padding: 50px 30px 30px;
   font-family: 'Poppins', sans-serif;
 }
 
@@ -820,15 +825,88 @@ body {
 }
 
 
-.reveal{
-  opacity:0;
-  transform:translateY(60px) scale(.95);
-  transition:1s cubic-bezier(.2,.8,.2,1);
+ 
+.top-product-video-box{
+  width:100%;
+  max-width:380px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:16px;
+  overflow:hidden;
+  flex:0 1 380px;
+  margin:auto;
 }
 
-.reveal.show{
-  opacity:1;
-  transform:translateY(0) scale(1);
+.top-product-text{
+  flex:1 1 300px;
+  text-align:center;
 }
 
 
+
+@media(max-width:768px){
+
+.top-product-content{
+  flex-direction:column;
+}
+
+.top-product-video-box{
+  width:100%;
+  max-width:300px;
+  margin:auto;
+}
+
+}
+
+
+.top-product-content{
+  flex-direction:column;
+}
+
+
+.top-product-video{
+  width:100%;
+  height:100%;
+  max-height:380px;
+  object-fit:cover;
+  border-radius:16px;
+}
+
+
+.top-product-content {
+  display:flex;
+  flex-wrap:wrap;
+}
+
+
+.top-product-content{
+  justify-content:center;
+  align-items:center;
+}
+
+
+
+.services-more{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-top:40px;
+}
+
+.services-btn{
+  padding:14px 40px;
+  font-size:15px;
+  border-radius:40px;
+  text-decoration:none;
+  backdrop-filter:blur(12px);
+  background:  #d5582b;
+  color: #ffffff;
+  border:1px solid rgba(255,255,255,.25);
+  transition:.3s ease;
+}
+
+.services-btn:hover{
+  transform:scale(1.05);
+}
