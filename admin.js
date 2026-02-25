@@ -659,6 +659,42 @@ window._adminDebug = { ventasData, productos, extras, refreshSales };
 
 // ---------- PEDIDOS (desde Google Sheets) ----------
 const ordersCard = document.getElementById('orders-card');
+const PEDIDOS_BOARD_KEY = "pedidosBoardState";
+let lastPedidos = [];
+
+function getPedidoBoardState() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(PEDIDOS_BOARD_KEY) || "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (_) {
+    return {};
+  }
+}
+
+function savePedidoBoardState(state) {
+  localStorage.setItem(PEDIDOS_BOARD_KEY, JSON.stringify(state || {}));
+}
+
+function setPedidoStage(id, stage) {
+  const key = String(id || "");
+  if (!key) return;
+  const state = getPedidoBoardState();
+  state[key] = stage;
+  savePedidoBoardState(state);
+}
+
+function sanitizePedidoBoardState(pedidos) {
+  const valid = new Set((pedidos || []).map(p => String(p.id || "")));
+  const state = getPedidoBoardState();
+  let dirty = false;
+  Object.keys(state).forEach(id => {
+    if (!valid.has(id)) {
+      delete state[id];
+      dirty = true;
+    }
+  });
+  if (dirty) savePedidoBoardState(state);
+}
 
 
 // 🔹 Función auxiliar: intenta parsear cualquier tipo de fecha
@@ -768,6 +804,8 @@ function updatePedidoBadges() {
   });
 
 }
+
+
 
 
 
@@ -955,6 +993,88 @@ document.querySelectorAll(".btn-whatsapp").forEach(btn => {
   // Excel y PDF quedan exactamente igual que ya los tienes
 }
 
+function renderPedidosBoard(pedidos){
+  const prep = [];
+  const ready = [];
+  sanitizePedidoBoardState(pedidos);
+  const stageMap = getPedidoBoardState();
+
+  pedidos.forEach(p => {
+    const id = String(p.id || "");
+    const stage = stageMap[id] === "ready" ? "ready" : "prep";
+    if (stage === "ready") ready.push(p);
+    else prep.push(p);
+  });
+
+  const countPrep = document.getElementById("count-prep");
+  const countReady = document.getElementById("count-ready");
+  const prepList = document.getElementById("prep-list");
+  const readyList = document.getElementById("ready-list");
+
+  if (countPrep) countPrep.textContent = prep.length;
+  if (countReady) countReady.textContent = ready.length;
+  if (prepList) prepList.innerHTML = prep.map(p => crearCardPedido(p, "prep")).join('');
+  if (readyList) readyList.innerHTML = ready.map(p => crearCardPedido(p, "ready")).join('');
+}
+
+function crearCardPedido(p, stage = "prep"){
+  const fecha = tryParseDate(p.fecha)?.getTime() || 0;
+  const minutos = Math.floor((Date.now() - fecha) / 60000);
+
+  let estado = "NEW";
+  let clase = "badge-new";
+  if (minutos > 3) { estado = "DELAY"; clase = "badge-delay"; }
+  if (minutos > 6) { estado = "LATE"; clase = "badge-late"; }
+
+  const productos = (p.productos || '')
+    .split('|')
+    .map(i => i.trim())
+    .filter(Boolean)
+    .join('<br>');
+
+  const actionButton = stage === "prep"
+    ? `<button class="card-action-btn btn-to-ready" data-id="${p.id}" title="Pasar a por entregar">✓ Pasar</button>`
+    : `<button class="card-action-btn btn-to-prep" data-id="${p.id}" title="Regresar a preparación">↩ Volver</button>`;
+
+  return `
+  <div class="pedido-card ${stage === "ready" ? "is-ready" : "is-prep"}" data-id="${p.id}" data-fecha="${p.fecha}" title="Ver detalle">
+    <div class="pedido-header">
+      <div class="pedido-id">#${p.id || '-'}</div>
+      <div class="pedido-badge ${clase}">${estado}</div>
+    </div>
+    <div class="pedido-body">
+      <strong>${p.nombre || 'Cliente'}</strong><br>
+      ${productos || '-'}
+    </div>
+    <div class="pedido-footer">
+      <div class="pedido-total">${formatCurrency(p.total)}</div>
+      <div>${actionButton}</div>
+    </div>
+  </div>
+  `;
+}
+
+function setPedidosLoading(isLoading) {
+  const prepList = document.getElementById("prep-list");
+  const readyList = document.getElementById("ready-list");
+  const countPrep = document.getElementById("count-prep");
+  const countReady = document.getElementById("count-ready");
+  const skeletonCard = () => `
+    <div class="pedido-card card-skeleton">
+      <div class="sk-line w60"></div>
+      <div class="sk-line w90"></div>
+      <div class="sk-line w75"></div>
+      <div class="sk-line w40"></div>
+    </div>`;
+
+  if (!isLoading) return;
+
+  if (countPrep) countPrep.textContent = "...";
+  if (countReady) countReady.textContent = "...";
+  if (prepList) prepList.innerHTML = Array.from({ length: 3 }, skeletonCard).join("");
+  if (readyList) readyList.innerHTML = Array.from({ length: 3 }, skeletonCard).join("");
+}
+
 
 
 
@@ -962,8 +1082,7 @@ document.querySelectorAll(".btn-whatsapp").forEach(btn => {
 // Cargar pedidos desde Sheets
 // Cargar pedidos desde Sheets
 async function loadPedidos() {
-  if (!ordersCard) return;
-  ordersCard.innerHTML = '<p style="text-align:center;">Cargando pedidos...</p>';
+  setPedidosLoading(true);
 
   try {
     const res = await fetch(`${GOOGLE_SHEET_API}?sheet=Pedidos`);
@@ -974,7 +1093,7 @@ async function loadPedidos() {
 
     if (!data || !Array.isArray(data)) {
       console.warn("No se recibieron pedidos válidos:", data);
-      ordersCard.innerHTML = '<p style="text-align:center;color:#888;">No hay pedidos registrados.</p>';
+      renderPedidosBoard([]);
       return;
     }
 
@@ -993,11 +1112,12 @@ async function loadPedidos() {
     }));
 
     pedidos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-    renderPedidos(pedidos);
+    lastPedidos = pedidos;
+    renderPedidosBoard(pedidos);
 
   } catch (err) {
     console.error('Error al obtener pedidos:', err);
-    ordersCard.innerHTML = `<p style="text-align:center;color:red;">Error al cargar pedidos</p>`;
+    renderPedidosBoard([]);
   }
 }
 
@@ -1005,10 +1125,113 @@ async function loadPedidos() {
 // Cuando el usuario hace clic en la sección "Pedidos"
 document.querySelector('[data-section="pedidos"]')?.addEventListener('click', loadPedidos);
 
+// Acciones rápidas de mini-card (board)
+document.addEventListener("click", (e) => {
+  const toReady = e.target.closest(".btn-to-ready");
+  if (toReady) {
+    e.preventDefault();
+    e.stopPropagation();
+    setPedidoStage(toReady.dataset.id, "ready");
+    renderPedidosBoard(lastPedidos || []);
+    return;
+  }
+
+  const toPrep = e.target.closest(".btn-to-prep");
+  if (toPrep) {
+    e.preventDefault();
+    e.stopPropagation();
+    setPedidoStage(toPrep.dataset.id, "prep");
+    renderPedidosBoard(lastPedidos || []);
+  }
+});
+
+// Click en mini-card del board -> detalle rápido del pedido
+document.addEventListener("click", (e) => {
+  if (e.target.closest(".card-action-btn")) return;
+  const card = e.target.closest(".pedido-card");
+  if (!card) return;
+
+  const id = String(card.dataset.id || "");
+  if (!id) return;
+
+  const pedido = (lastPedidos || []).find(p => String(p.id) === id);
+  if (!pedido) return;
+
+  if (typeof Swal !== "undefined" && Swal.fire) {
+    Swal.fire({
+      title: `Pedido #${pedido.id || '-'}`,
+      html: `
+        <div style="text-align:left;font-size:14px;line-height:1.5">
+          <div><strong>Fecha:</strong> ${formatFechaPedido(pedido.fecha)}</div>
+          <div><strong>Cliente:</strong> ${pedido.nombre || '-'}</div>
+          <div><strong>Teléfono:</strong> ${pedido.telefono || '-'}</div>
+          <div><strong>Método:</strong> ${pedido.metodo || '-'}</div>
+          <div><strong>Dirección:</strong> ${pedido.direccion || '-'}</div>
+          <div><strong>Pago:</strong> ${pedido.pago || '-'}</div>
+          <div><strong>Total:</strong> ${formatCurrency(pedido.total)}</div>
+          <div><strong>Productos:</strong><br>${(pedido.productos || '-').split('|').map(x => x.trim()).filter(Boolean).join('<br>')}</div>
+          <div><strong>Notas:</strong> ${pedido.notas || '-'}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <button id="swal-wa" class="swal2-confirm swal2-styled" style="background:#25d366">WhatsApp</button>
+            <button id="swal-complete" class="swal2-confirm swal2-styled" style="background:#16a34a">Completar</button>
+            <button id="swal-cancel" class="swal2-cancel swal2-styled" style="background:#dc2626">Cancelar</button>
+          </div>
+        </div>
+      `,
+      showConfirmButton: false,
+      didOpen: () => {
+        const btnWa = document.getElementById("swal-wa");
+        const btnComplete = document.getElementById("swal-complete");
+        const btnCancel = document.getElementById("swal-cancel");
+
+        btnWa?.addEventListener("click", () => {
+          if (!pedido.telefono) return;
+          const telefono = String(pedido.telefono).replace(/\D/g, '');
+          const mensaje =
+            'Hola ' + (pedido.nombre || '') +
+            ', te contactamos porque queremos informarte que tu pedido está en proceso 🍔🔥';
+          window.location.href = 'https://wa.me/' + telefono + '?text=' + encodeURIComponent(mensaje);
+        });
+
+        btnComplete?.addEventListener("click", async () => {
+          [btnWa, btnComplete, btnCancel].forEach(b => { if (b) b.disabled = true; });
+          Swal.fire({
+            title: 'Completando pedido...',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading()
+          });
+
+          await sendPedidoAction("complete", { id: pedido.id });
+          await loadPedidos();
+          Swal.fire({ icon: 'success', title: 'Pedido completado', timer: 1400, showConfirmButton: false });
+        });
+
+        btnCancel?.addEventListener("click", async () => {
+          [btnWa, btnComplete, btnCancel].forEach(b => { if (b) b.disabled = true; });
+          Swal.fire({
+            title: 'Cancelando pedido...',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading()
+          });
+
+          await sendPedidoAction("cancel", { id: pedido.id });
+          await loadPedidos();
+          Swal.fire({ icon: 'success', title: 'Pedido cancelado', timer: 1400, showConfirmButton: false });
+        });
+      }
+    });
+  } else {
+    alert(JSON.stringify(pedido, null, 2));
+  }
+});
+
 
 /* === ACTUALIZACIÓN AUTOMÁTICA EN TIEMPO REAL === */
 const REFRESH_INTERVAL = 10000; // cada 10 segundos
-let lastPedidos = [];
 let lastPedidosHash = "";
 let isAlertActive = false;
 let soundTimeout = null;
@@ -1055,7 +1278,7 @@ async function checkPedidosUpdate() {
     // 🧩 Detectar cambios totales (para refrescar tabla)
     if (currentHash !== lastPedidosHash) {
       console.log("♻️ Cambios detectados en la hoja de PEDIDOS");
-      renderPedidos(pedidosActuales);
+      renderPedidosBoard(pedidosActuales);
       lastPedidosHash = currentHash;
     }
 
@@ -1237,9 +1460,16 @@ async function sendPedidoAction(action, payload = {}) {
       })
     });
 
-    // Si tu doPost responde con { success: true }
-    const data = await res.json();
-    return data.success || false;
+    // Con no-cors la respuesta suele ser "opaque": no se puede leer body, pero el request sí salió.
+    if (res && res.type === "opaque") return true;
+
+    try {
+      const data = await res.json();
+      if (typeof data?.success === "boolean") return data.success;
+      return true;
+    } catch (_) {
+      return true;
+    }
 
   } catch (err) {
     console.error("❌ Error en acción Sheets:", err);
@@ -1255,38 +1485,34 @@ document.addEventListener("click", async (e) => {
     const id = btn.dataset.id;
     if (!confirm("¿Marcar este pedido como completado?")) return;
 
-    const ok = await sendPedidoAction("complete", { id });
-    if (ok) {
-      alert("✅ Pedido completado y movido a Ventas");
-      fetchPedidos(); // refresca la tabla
-    } else {
-      Swal.fire({
-  icon: 'success',
-  title: '¡Éxito!',
-  text: 'El pedido se completó correctamente 🎉',
-  showConfirmButton: false,
-  timer: 2000
-});
-    }
+    Swal.fire({
+      title: 'Completando pedido...',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    await sendPedidoAction("complete", { id });
+    await loadPedidos();
+    Swal.fire({ icon: 'success', title: 'Pedido completado', showConfirmButton: false, timer: 1500 });
   }
 
   if (btn.classList.contains("btn-cancelar")) {
     const id = btn.dataset.id;
     if (!confirm("¿Cancelar este pedido?")) return;
 
-    const ok = await sendPedidoAction("cancel", { id });
-    if (ok) {
-      alert("✅ Pedido cancelado");
-      fetchPedidos();
-    } else {
-      Swal.fire({
-  icon: 'success',
-  title: '¡Éxito!',
-  text: 'El pedido se Canceló correctamente 🎉',
-  showConfirmButton: false,
-  timer: 2000
-});
-    }
+    Swal.fire({
+      title: 'Cancelando pedido...',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    await sendPedidoAction("cancel", { id });
+    await loadPedidos();
+    Swal.fire({ icon: 'success', title: 'Pedido cancelado', showConfirmButton: false, timer: 1500 });
   }
 
   if (btn.classList.contains("btn-editar")) {
@@ -1298,7 +1524,7 @@ document.addEventListener("click", async (e) => {
     const ok = await sendPedidoAction("edit", { id, field: campo, value: valor });
     if (ok) {
       alert("✏️ Pedido actualizado");
-      fetchPedidos();
+      loadPedidos();
     } else {
       Swal.fire({
   icon: 'success',
