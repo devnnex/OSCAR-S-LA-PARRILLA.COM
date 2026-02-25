@@ -922,3 +922,163 @@ body {
   content:"\f00d"; /* icono X */
 }
 
+/* =====================================================
+   INTRO STORY SCREEN
+===================================================== */
+
+#introScreen{
+  position:fixed;
+  inset:0;
+  backdrop-filter:blur(30px);
+  background:rgba(0,0,0,0.65);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999999;
+  transition:opacity .8s ease, visibility .8s ease;
+}
+
+#introScreen.hide{
+  opacity:0;
+  visibility:hidden;
+}
+
+.intro-content{
+  max-width:750px;
+  padding:40px;
+  text-align:center;
+  color:white;
+}
+
+.intro-text-box{
+  min-height:140px;
+  font-size:1.4rem;
+  line-height:1.8;
+  font-weight:500;
+}
+
+.intro-logo{
+  width:110px;
+  margin-top:50px;
+  animation:pulseLogo 1.8s ease-in-out infinite;
+}
+
+.intro-btn{
+  margin-top:30px;
+  padding:14px 40px;
+  background:#ff6600;
+  color:white;
+  border:none;
+  border-radius:40px;
+  font-size:1rem;
+  cursor:pointer;
+  transition:.3s ease;
+}
+
+.intro-btn:hover{
+  transform:scale(1.05);
+}
+
+.hidden{
+  opacity:0;
+  pointer-events:none;
+}
+
+/* ============================
+   INTRO CINEMATOGRÁFICA PRO
+============================ */
+
+.intro-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.35);
+  backdrop-filter:blur(12px);
+  z-index:99999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+
+  transition:all .6s ease;
+}
+
+.intro-container{
+  width:90%;
+  max-width:800px;
+  padding:35px 45px;
+  border-radius:18px;
+
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(25px);
+
+  box-shadow:
+  0 0 60px rgba(255,102,0,.15),
+  inset 0 0 12px rgba(255,255,255,.05);
+}
+
+.intro-text{
+  font-size:15px;
+  line-height:1.6;
+  text-align:center;
+  color:#fff;
+  letter-spacing:.4px;
+  white-space:pre-line;
+  min-height:180px;
+}
+
+.intro-text::after{
+  content:"|";
+  margin-left:4px;
+  animation:blink .8s infinite;
+}
+
+@keyframes blink{
+  0%,100%{opacity:1}
+  50%{opacity:0}
+}
+
+.intro-btn{
+  margin-top:25px;
+  padding:12px 35px;
+  background:#ff6600;
+  border:none;
+  border-radius:12px;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  opacity:0;
+  transition:.5s;
+}
+
+.intro-btn.show{
+  opacity:1;
+}
+
+/* LOGO ABAJO PARPADEANDO */
+.intro-logo{
+  width:90px;
+  margin-top:25px;
+  animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+  0%,100%{opacity:1}
+  50%{opacity:.3}
+}
+
+/* 📱 MOBILE */
+@media(max-width:768px){
+
+  .intro-container{
+    padding:25px;
+    width:92%;
+  }
+
+  .intro-text{
+    font-size:13px;
+    line-height:1.5;
+    min-height:160px;
+  }
+
+}
