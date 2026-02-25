@@ -26,6 +26,26 @@
 </head>
 <body>
 
+  <!-- ================= INTRO STORY SCREEN ================= -->
+<div id="introScreen" class="intro-overlay">
+
+  <div class="intro-container">
+
+    <div id="introText" class="intro-text"></div>
+
+    <button id="introBtn" class="intro-btn">
+      CONTINUAR
+    </button>
+
+    <img src="images/logo.png" class="intro-logo">
+
+  </div>
+
+</div>
+
+<!-- sonido teclado -->
+<audio id="typingSound" src="sounds/typing.mp3" preload="auto"></audio>
+
   <!-- BOTÓN HAMBURGUESA (solo móvil) -->
 <button class="menu-toggle" id="menuToggle">
   <i class="fas fa-bars"></i>
@@ -562,6 +582,99 @@ document.querySelectorAll(".galeria-img").forEach(img=>{
 modal.onclick = ()=>{
   modal.classList.remove("active");
 };
+
+/* =====================================================
+   INTRO TYPEWRITER ENGINE (SYNCED TO YOUR AUDIO BPM)
+===================================================== */
+const introScreen = document.getElementById("introScreen");
+const introText = document.getElementById("introText");
+const introBtn = document.getElementById("introBtn");
+const typingSound = document.getElementById("typingSound");
+
+const text = `
+Todo nació con un sueño...
+
+Mi primer oportunidad laboral fue a los 15 años como mesero, desde ese
+momento nació en mi una profunda pasión por los asados y temas
+culinarios.
+
+Soy administrador de empresa de profesión y fundador de Oscar's la
+parrilla, que inicia en el año 2015, después de muchos intentos frustrados
+de tener empleo; hoy solo doy gracias a tantos NO que me sirvieron de
+escalón para seguir adelante con este proyecto.
+
+Nuestra misión y visión es que con precios justos, comida de calidad y
+buen servicio seamos el restaurante favorito de la ciudad.
+
+Finalmente, el sueño se convirtió en realidad, el resto es la historia que
+ustedes ya están conociendo...
+
+Gracias, gracias, gracias.
+`;
+
+let i = 0;
+const speed = 90; // 🔥 TU AUDIO REAL BPM (199ms)
+
+typingSound.loop = true;
+typingSound.volume = 0.95;
+
+function startTyping(){
+
+  const interval = setInterval(()=>{
+
+    if(i < text.length){
+
+      introText.innerHTML += text.charAt(i);
+      i++;
+
+    }else{
+
+      clearInterval(interval);
+      typingSound.pause();
+      introBtn.classList.add("show");
+
+    }
+
+  }, speed);
+
+}
+
+
+// 🔓 Desbloquear audio con primera interacción real
+function unlockAndStart() {
+
+  typingSound.play().then(()=>{
+    typingSound.pause();
+    typingSound.currentTime = 0;
+
+    typingSound.loop = true;
+    typingSound.volume = 0.75;
+
+    typingSound.play().catch(()=>{});
+    startTyping();
+
+  }).catch(()=>{});
+
+  document.removeEventListener("click", unlockAndStart);
+}
+
+// Espera cualquier click del usuario
+document.addEventListener("click", unlockAndStart);
+
+
+setTimeout(startTyping, 900);
+
+introBtn.addEventListener("click",()=>{
+
+  introScreen.style.opacity="0";
+  introScreen.style.backdropFilter="blur(0px)";
+
+  setTimeout(()=>{
+    introScreen.style.display="none";
+  },600);
+
+});
+
 
 </script>
 
