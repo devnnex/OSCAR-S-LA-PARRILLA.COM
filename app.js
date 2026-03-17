@@ -1928,11 +1928,38 @@ const searchInput = document.getElementById('search');
 
 // ---------- Init ----------
 function init(){
+  resetClientForm(); // 👈 AQUI
   renderCategories();
   setActiveCategory(activeCategory);
   bindEvents();
   refreshCartUI();
 }
+
+function resetClientForm() {
+  const form = document.getElementById('checkout-form');
+  if (!form) return;
+
+  // Reset visual
+  form.reset();
+
+  // Limpiar posibles datos guardados manualmente (por si luego implementas persistencia)
+  form.querySelectorAll('input, textarea, select').forEach(el => {
+    if (el.type === 'radio' || el.type === 'checkbox') {
+      el.checked = false;
+    } else {
+      el.value = '';
+    }
+  });
+
+  // Opcional: dejar valores por defecto (pro UX)
+  const recoger = form.querySelector('input[value="recoger"]');
+  if (recoger) recoger.checked = true;
+
+  // Ocultar campos dinámicos
+  document.getElementById('address-label')?.classList.add('hidden');
+  document.getElementById('envio-row')?.classList.add('hidden');
+}
+
 init();
 
 // ---------- Render categorías ----------
@@ -2652,7 +2679,18 @@ cart.forEach(item => {
 
    // 🟢 1. REDIRECCIONAR INMEDIATAMENTE (NO BLOQUEABLE)
   window.location.href = waUrl;
- 
+ // 🧹 Vaciar carrito
+ cart = [];
+ persistCart();
+ refreshCartUI();
+ localStorage.removeItem('tb_cart');
+
+ resetClientForm();
+
+ // ⏳ RECARGA SEGURA (clave)
+ setTimeout(() => {
+  window.location.reload();
+}, 1500); // 1.5 segundos es perfecto
 
   // 🟡 2. ENVIAR A SHEETS EN SEGUNDO PLANO
   const orderData = {
