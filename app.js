@@ -2677,8 +2677,12 @@ cart.forEach(item => {
   const msg = encodeURIComponent(textParts.join('\n'));
   const waUrl = `https://wa.me/${bp}?text=${msg}`;
 
+  // antes de vaciar carrito
+const cartCopy = [...cart];
+
    // 🟢 1. REDIRECCIONAR INMEDIATAMENTE (NO BLOQUEABLE)
   window.location.href = waUrl;
+  
  // 🧹 Vaciar carrito
  cart = [];
  persistCart();
@@ -2702,7 +2706,7 @@ cart.forEach(item => {
     direccion: address,
     notas: notes,
     total: total,
-    carrito: cart.map(i => ({
+    carrito: cartCopy.map(i => ({
       producto: i.title,
       cantidad: i.qty,
       precio: i.price,
